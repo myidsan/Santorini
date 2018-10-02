@@ -70,7 +70,6 @@ namespace assignment1
                             if (line[0] == '"' && line[line.Length - 1] == '"')
                             {
                                 results.Push(line.Substring(1, line.Length - 2));
-                                continue;
                             }
                             else if (line[0] == '"' && line[line.Length - 1] != '"')
                             {
