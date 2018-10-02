@@ -80,15 +80,19 @@ namespace assignment1
                             {
                                 results.Push(result.Substring(1, result.Length - 2));
                             }
-                            else // integer or float
-                            {
-                                int ival; double fval;
-                                if (Int32.TryParse(line, out ival))
-                                    results.Push(ival);
-                                else
-                                {
-                                    fval = Convert.ToDouble(line);
-                                    results.Push(fval);
+                            else if (line[0] != '"' && line[line.Length - 1] != '"') {
+                                try {
+                                    int ival; double fval;
+                                    if (Int32.TryParse(line, out ival))
+                                        results.Push(ival);
+                                    else
+                                    {
+                                        fval = Convert.ToDouble(line);
+                                        results.Push(fval);
+                                    }
+                                }
+                                catch (Exception) {
+                                    continue;
                                 }
                             }
                         }
