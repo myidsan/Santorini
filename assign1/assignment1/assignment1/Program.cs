@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using static System.IO.File;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
@@ -12,11 +13,20 @@ namespace assignment1
         static void Main(string[] args)
         {
             // check if it is a file or console input
-            //if (args.Length == 0)
-            //{
-            //    Console.WriteLine("Bye");
-            //    System.Environment.Exit(1);
-            //}
+            if (args.Length == 0)
+            {
+                string path = @"tempText.txt";
+                TextWriter tw = new StreamWriter(path);
+                
+               while (true) {
+                   var input = Console.ReadLine();
+                   if (input == null){
+                       tw.Close();
+                       break;
+                   }
+                   tw.WriteLine(input);
+               }
+            }
 
             //// File
             char[] starters = { '[', '{' };
@@ -25,8 +35,13 @@ namespace assignment1
             string line;
             string result = "";
             int balance = 0;
+            StreamReader file;
 
-            StreamReader file = new StreamReader(@"./test.txt");
+            if (args.Length == 0){
+                file = new StreamReader(@"./tempText.txt");
+            } else{
+                file = new StreamReader(args[1]);
+            }
 
             while ((line = file.ReadLine()) != null)
             {
