@@ -69,6 +69,10 @@ namespace assignment1
                         catch (Exception)
                         {
                             // string
+                            if (line == "")
+                            {
+                                continue;
+                            }
                             if (line[0] == '"' && line[line.Length - 1] == '"')
                             {
                                 results.Push(line.Substring(1, line.Length - 2));
@@ -81,8 +85,10 @@ namespace assignment1
                             {
                                 results.Push(result.Substring(1, result.Length - 2));
                             }
-                            else if (line[0] != '"' && line[line.Length - 1] != '"') {
-                                try {
+                            else if (line[0] != '"' && line[line.Length - 1] != '"')
+                            {
+                                try
+                                {
                                     double fval;
                                     if (Int32.TryParse(line, out int ival))
                                         results.Push(ival);
@@ -92,7 +98,13 @@ namespace assignment1
                                         results.Push(fval);
                                     }
                                 }
-                                catch (Exception) {
+                                catch (Exception)
+                                {
+                                    if (line == "true" || line == "false" || line == "null")
+                                    {
+                                        JToken o = JToken.Parse(line);
+                                        results.Push(o);
+                                    }
                                     continue;
                                 }
                             }
