@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using static System.IO.File;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
@@ -12,36 +11,28 @@ namespace assignment1
     {
         static void Main(string[] args)
         {
-            // check if it is a file or console input
-            if (args.Length == 0)
+            string path = @"tempText.txt";
+            StreamWriter tw = new StreamWriter(path);
+
+            while (true)
             {
-                string path = @"tempText.txt";
-                TextWriter tw = new StreamWriter(path);
-                
-               while (true) {
-                   var input = Console.ReadLine();
-                   if (input == null){
-                       tw.Close();
-                       break;
-                   }
-                   tw.WriteLine(input);
-               }
+                var input = Console.ReadLine();
+                if (input == null)
+                {
+                    tw.Close();
+                    break;
+                }
+                tw.WriteLine(input);
             }
 
             //// File
+            StreamReader file = new StreamReader(@"./tempText.txt");
             char[] starters = { '[', '{' };
             char[] enders = { ']', '}' };
             Stack<dynamic> results = new Stack<dynamic>();
             string line;
             string result = "";
             int balance = 0;
-            StreamReader file;
-
-            if (args.Length == 0){
-                file = new StreamReader(@"./tempText.txt");
-            } else{
-                file = new StreamReader(args[1]);
-            }
 
             while ((line = file.ReadLine()) != null)
             {
@@ -78,10 +69,6 @@ namespace assignment1
                         catch (Exception)
                         {
                             // string
-                            // can't hanlde input like
-                            // "hello
-                            // yee-
-                            // world" --> only recognize last line
                             if (line[0] == '"' && line[line.Length - 1] == '"')
                             {
                                 results.Push(line.Substring(1, line.Length - 2));
@@ -96,8 +83,8 @@ namespace assignment1
                             }
                             else if (line[0] != '"' && line[line.Length - 1] != '"') {
                                 try {
-                                    int ival; double fval;
-                                    if (Int32.TryParse(line, out ival))
+                                    double fval;
+                                    if (Int32.TryParse(line, out int ival))
                                         results.Push(ival);
                                     else
                                     {
@@ -127,6 +114,8 @@ namespace assignment1
                     };
                 Console.WriteLine(jsonObject);
             }
+            File.Delete(@"tempText.txt");
+            return;
         }
     }
 }
