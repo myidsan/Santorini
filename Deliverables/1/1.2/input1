@@ -1,0 +1,15 @@
+[1,2]
+{"hello": "world"}
+{ "key": {
+                "hello": "world"
+               }
+}
+"hello world"
+123
+2.89E10
+-3.89E10
+"hello 
+yee-
+world"
+
+"ww"
