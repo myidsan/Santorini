@@ -101,11 +101,14 @@ namespace assignment1
                                         results.Push(fval);
                                     }
                                 }
-                                catch (Exception)
+                                catch (Exception) // null, true, false
                                 {
-
-                                    JToken o = JToken.Parse(line);
-                                    results.Push(o);
+                                    if (line == "null" || line == "true" || line == "false")
+                                    {
+                                        JToken o = JToken.Parse(line);
+                                        results.Push(o);
+                                    }
+                                    continue;
                                 }
                             }
                         }
