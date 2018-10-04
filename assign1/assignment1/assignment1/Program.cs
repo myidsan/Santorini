@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 
@@ -29,7 +30,7 @@ namespace assignment1
             StreamReader file = new StreamReader(@"./tempText.txt");
             char[] starters = { '[', '{' };
             char[] enders = { ']', '}' };
-            Stack<dynamic> results = new Stack<dynamic>();
+            Stack<JToken> results = new Stack<JToken>();
             string line;
             string result = "";
             int balance = 0;
@@ -75,7 +76,8 @@ namespace assignment1
                             }
                             if (line[0] == '"' && line[line.Length - 1] == '"')
                             {
-                                results.Push(line.Substring(1, line.Length - 2));
+                                JToken o = JToken.Parse(line);
+                                results.Push(o);
                             }
                             else if (line[0] == '"' && line[line.Length - 1] != '"')
                             {
@@ -83,7 +85,8 @@ namespace assignment1
                             }
                             else if (line[0] != '"' && line[line.Length - 1] == '"')
                             {
-                                results.Push(result.Substring(1, result.Length - 2));
+                                JToken o = JToken.Parse(result);
+                                results.Push(o);
                             }
                             else if (line[0] != '"' && line[line.Length - 1] != '"')
                             {
@@ -100,12 +103,9 @@ namespace assignment1
                                 }
                                 catch (Exception)
                                 {
-                                    if (line == "true" || line == "false" || line == "null")
-                                    {
-                                        JToken o = JToken.Parse(line);
-                                        results.Push(o);
-                                    }
-                                    continue;
+
+                                    JToken o = JToken.Parse(line);
+                                    results.Push(o);
                                 }
                             }
                         }
@@ -119,15 +119,22 @@ namespace assignment1
             // print the stack from the top
             while (results.Count != 0)
             {
-                var jsonObject = new JObject
-                    {
-                        { "index", results.Count },
-                        { "value", results.Pop() }
-                    };
-                Console.WriteLine(jsonObject);
-            }
+                JsonEncode computer = new JsonEncode
+                {
+                    index = results.Count,
+                    value = results.Pop()
+                };
+                string JSONresult = JsonConvert.SerializeObject(computer);
+                Console.WriteLine(JSONresult);
+
+                }
             File.Delete(@"tempText.txt");
             return;
         }
+    }
+    public class JsonEncode
+    {
+        public int index;
+        public JToken value;
     }
 }
