@@ -1,6 +1,6 @@
 # team2
 
-Building the C# files resulted in .exe and .dll files, which are unable to be run on Linux machines. We also discovered that when we tried to run dotnet run on the Linux machines, we received the following error: 
+Building the C# files resulted in .exe and .dll files, which are unable to be run on Linux machines. We also discovered that when we tried to run dotnet run on the Linux machines, we were not able to. This is what we saw on the tlab machines.
 
 ![alt text](/assign1/assets/bug.png)
 
