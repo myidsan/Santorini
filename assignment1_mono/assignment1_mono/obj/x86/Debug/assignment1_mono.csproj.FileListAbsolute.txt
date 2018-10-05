@@ -1,0 +1,9 @@
+/Users/SanLee/Projects/team2/assignment1_mono/assignment1_mono/bin/Debug/assignment1_mono.exe
+/Users/SanLee/Projects/team2/assignment1_mono/assignment1_mono/bin/Debug/assignment1_mono.pdb
+/Users/SanLee/Projects/team2/assignment1_mono/assignment1_mono/bin/Debug/Newtonsoft.Json.dll
+/Users/SanLee/Projects/team2/assignment1_mono/assignment1_mono/bin/Debug/Newtonsoft.Json.xml
+/Users/SanLee/Projects/team2/assignment1_mono/assignment1_mono/obj/x86/Debug/assignment1_mono.csprojAssemblyReference.cache
+/Users/SanLee/Projects/team2/assignment1_mono/assignment1_mono/obj/x86/Debug/assignment1_mono.csproj.CoreCompileInputs.cache
+/Users/SanLee/Projects/team2/assignment1_mono/assignment1_mono/obj/x86/Debug/assignment1_mono.csproj.CopyComplete
+/Users/SanLee/Projects/team2/assignment1_mono/assignment1_mono/obj/x86/Debug/assignment1_mono.exe
+/Users/SanLee/Projects/team2/assignment1_mono/assignment1_mono/obj/x86/Debug/assignment1_mono.pdb

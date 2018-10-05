@@ -1,0 +1,17 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "assignment1_mono", "assignment1_mono\assignment1_mono.csproj", "{E067A7D9-872B-4184-9578-79CBDFFA8E10}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E067A7D9-872B-4184-9578-79CBDFFA8E10}.Debug|x86.ActiveCfg = Debug|x86
+		{E067A7D9-872B-4184-9578-79CBDFFA8E10}.Debug|x86.Build.0 = Debug|x86
+		{E067A7D9-872B-4184-9578-79CBDFFA8E10}.Release|x86.ActiveCfg = Release|x86
+		{E067A7D9-872B-4184-9578-79CBDFFA8E10}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+EndGlobal
