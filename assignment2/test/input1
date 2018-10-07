@@ -1,0 +1,3 @@
+{"operation-name": "declare_number"}
+{"opeartion-name": "switch_number", "operation-argument1": true}
+{"operation-name": "compare_number", "operation-argument1": {"operation-name": "get_number"}, "operation-argument-2":

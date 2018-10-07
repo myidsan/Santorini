@@ -1,0 +1,9 @@
+/Users/SanLee/Projects/team2/assignment2/assignment2/obj/x86/Debug/assignment2.csprojAssemblyReference.cache
+/Users/SanLee/Projects/team2/assignment2/assignment2/obj/x86/Debug/assignment2.csproj.CoreCompileInputs.cache
+/Users/SanLee/Projects/team2/assignment2/assignment2/bin/Debug/assignment2.exe
+/Users/SanLee/Projects/team2/assignment2/assignment2/bin/Debug/assignment2.pdb
+/Users/SanLee/Projects/team2/assignment2/assignment2/bin/Debug/Newtonsoft.Json.dll
+/Users/SanLee/Projects/team2/assignment2/assignment2/bin/Debug/Newtonsoft.Json.xml
+/Users/SanLee/Projects/team2/assignment2/assignment2/obj/x86/Debug/assignment2.csproj.CopyComplete
+/Users/SanLee/Projects/team2/assignment2/assignment2/obj/x86/Debug/assignment2.exe
+/Users/SanLee/Projects/team2/assignment2/assignment2/obj/x86/Debug/assignment2.pdb
