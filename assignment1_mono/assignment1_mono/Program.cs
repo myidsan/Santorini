@@ -20,6 +20,11 @@ namespace assignment1
             string line;
             string result = "";
             int balance = 0;
+            int dquoteBalance = 0;
+            int openArrBracket = 0;
+            int closeArrBracket = 0;
+            int openObjBracket = 0;
+            int closeObjBracket = 0;
 
             while ((line = Console.ReadLine()) != null)
             {
@@ -29,50 +34,38 @@ namespace assignment1
                 // if the sum is 0, that means string or number
 
                 // positive balance
-                balance += line.Count(x => x == '[');
-                balance += line.Count(x => x == '{');
+                openArrBracket = line.Count(x => x == '[');
+                openObjBracket = line.Count(x => x == '{');
                 // negative balance
-                balance -= line.Count(x => x == ']');
-                balance -= line.Count(x => x == '}');
+                closeArrBracket = line.Count(x => x == ']');
+                closeObjBracket = line.Count(x => x == '}');
+                var dquoteCount = line.Count(x => x == '"');
+
                 result += line;
 
-                if (balance == 0)
+                balance = balance + openArrBracket + openObjBracket - closeArrBracket - closeObjBracket;
+                dquoteBalance += dquoteCount;
+
+                if (balance != 0 || dquoteBalance%2 != 0)
                 {
-                    try // array and object
+                    continue;
+                }
+
+                if (balance == 0 || dquoteCount%2 == 0) // array, object, string, bool
+                {
+                    try
                     {
                         JToken o = JToken.Parse(result);
                         results.Push(o);
                     }
                     catch (Exception)
                     {
-                        // string
-                        var dquoteCount = line.Count(x => x == '"');
-                        if (dquoteCount == 2)
-                        {
-                            JToken o = JToken.Parse(line);
-                            results.Push(o);
-                        }
-                        else if (dquoteCount == 1)
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            // parse non-string values: int, double, boolean, null
-                            try
-                            {
-                                JToken o = JToken.Parse(line);
-                                results.Push(o);
-                            }
-                            catch (Exception) // multiple-line string or empty string
-                            {
-                                continue;
-                            }
-                        }
+                        continue;
                     }
-                    result = "";
                 }
+                result = "";
             }
+
             // print the stack from the top
             JsonEncode.PrintOut(results);
 
