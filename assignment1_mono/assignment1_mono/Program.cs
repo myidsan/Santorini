@@ -12,24 +12,8 @@ namespace assignment1
 {
     class Program
     {
-        static void Main()
+        static void Main(string[] args)
         {
-            string path = @"tempText.txt";
-            StreamWriter tw = new StreamWriter(path);
-
-            while (true)
-            {
-                var input = Console.ReadLine();
-                if (input == null)
-                {
-                    tw.Close();
-                    break;
-                }
-                tw.WriteLine(input);
-            }
-
-            //// File
-            StreamReader file = new StreamReader(@"./tempText.txt");
             char[] starters = { '[', '{' };
             char[] enders = { ']', '}' };
             Stack<JToken> results = new Stack<JToken>();
@@ -37,9 +21,13 @@ namespace assignment1
             string result = "";
             int balance = 0;
 
-            while ((line = file.ReadLine()) != null)
+            while ((line = Console.ReadLine()) != null)
             {
+                //line = file.ReadLine();
                 // using linq
+                // set as different variable for each starters and enders
+                // if the sum is 0, that means string or number
+
                 // positive balance
                 balance += line.Count(x => x == '[');
                 balance += line.Count(x => x == '{');
@@ -85,12 +73,9 @@ namespace assignment1
                     result = "";
                 }
             }
-            file.Close();
-
             // print the stack from the top
             JsonEncode.PrintOut(results);
 
-            File.Delete(@"tempText.txt");
             return;
         }
     }
