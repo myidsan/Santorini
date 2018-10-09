@@ -7,50 +7,48 @@ namespace assignment2
 {
     class Program
     {
-        static int num = 0;
-        static Player newPlayer = new Player();
+     static Player newPlayer = new Player();
 
         static void Main(string[] args)
         {
             // read the commands from STDIN
             JSONEncoder JSONEcoder = new JSONEncoder();
-            Queue<JToken> commands = JSONEcoder.JSONParser();
-            Console.WriteLine(commands);
+            JToken command = null;
 
-            // parser
-            while (commands.Count > 0)
+            // Dispatch
+            while (true) 
             {
-                var command = commands.Dequeue().ToString();
-                var JSONcommand = JObject.Parse(command);
+                command = JSONEcoder.JSONParser();
+                if (command == null) break;
+                JObject JSONcommand = JObject.Parse(command.ToString());
                 string operationName = JSONcommand["operation-name"].ToString();
-                Console.WriteLine(operationName);
-                RunCommand(operationName);
+                RunCommand(operationName, JSONcommand);
             }
-          
-            
+
+            Console.WriteLine("End of Game");
             return;
         }
 
-        static void RunCommand(string command)
+        static void RunCommand(string command, JObject json)
         {
             switch (command)
             {
                 case "DeclareNumber":
-                    Console.WriteLine("DeclareNumber case");
-                    Console.WriteLine("Choose a number between 1 to 10");
+                    int num = (int) json["operation-argument1"];
                     newPlayer.DeclareNumber(num);
                     break;
 
                 case "GetNumber":
-                    Console.WriteLine("GetNumber case");
+                    newPlayer.GetNumber();
                     break;
 
                 case "SwitchNumber":
-                    Console.WriteLine("SwitchNumber case");
+                    bool choice = (bool)json["operation-argument1"];
+                    newPlayer.SwitchNumber(choice);
                     break;
 
                 case "HasPlayerSwitched":
-                    Console.WriteLine("HasPlayerSwitched case");
+                    newPlayer.HasPlayerSwitched();
                     break;
 
                 default:

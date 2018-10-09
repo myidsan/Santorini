@@ -12,34 +12,22 @@ namespace assignment2
 {
     class JSONEncoder
     {
-        public Queue<JToken> JSONParser()
+        public JToken JSONParser()
         {
-            string path = @"tempText.txt";
-            StreamWriter tw = new StreamWriter(path);
-
-            while (true)
-            {
-                var input = Console.ReadLine();
-                if (input == null)
-                {
-                    tw.Close();
-                    break;
-                }
-                tw.WriteLine(input);
-            }
-
-            //// File
-            StreamReader file = new StreamReader(@"./tempText.txt");
             char[] starters = { '[', '{' };
             char[] enders = { ']', '}' };
-            Queue<JToken> results = new Queue<JToken>();
+            JToken results = null;
             string line;
             string result = "";
             int balance = 0;
 
-            while ((line = file.ReadLine()) != null)
+            while ((line = Console.ReadLine()) != null)
             {
+                //line = file.ReadLine();
                 // using linq
+                // set as different variable for each starters and enders
+                // if the sum is 0, that means string or number
+
                 // positive balance
                 balance += line.Count(x => x == '[');
                 balance += line.Count(x => x == '{');
@@ -52,8 +40,8 @@ namespace assignment2
                 {
                     try // array and object
                     {
-                        JToken o = JToken.Parse(result);
-                        results.Enqueue(o);
+                        results = JToken.Parse(result);
+                        break;
                     }
                     catch (Exception)
                     {
@@ -61,8 +49,8 @@ namespace assignment2
                         var dquoteCount = line.Count(x => x == '"');
                         if (dquoteCount == 2)
                         {
-                            JToken o = JToken.Parse(line);
-                            results.Enqueue(o);
+                            results = JToken.Parse(line);
+                            break;
                         }
                         else if (dquoteCount == 1)
                         {
@@ -73,8 +61,8 @@ namespace assignment2
                             // parse non-string values: int, double, boolean, null
                             try
                             {
-                                JToken o = JToken.Parse(line);
-                                results.Enqueue(o);
+                                results = JToken.Parse(line);
+                                break;
                             }
                             catch (Exception) // multiple-line string or empty string
                             {
@@ -82,15 +70,8 @@ namespace assignment2
                             }
                         }
                     }
-                    result = "";
                 }
             }
-            file.Close();
-
-            // print the stack from the top
-            //JsonEncode.PrintOut(results);
-
-            File.Delete(@"tempText.txt");
             return results;
         }
     }

@@ -5,37 +5,41 @@ namespace assignment2
     public class Player
     {
         int player_number;
-        //bool player_has_switched;
+        public int Player_number { get => player_number; set => player_number = value; }
+
+        bool player_has_switched = false;
+        public bool Player_has_switched { get => player_has_switched; set => player_has_switched = value; }
 
         public void DeclareNumber(int num)
         {
-            do
+            // need to check number of inputs params? where?
+            if (num < 1 || num > 10)
             {
-                try
-                {
-                    Console.WriteLine("in try");
-                    num = Convert.ToInt32(Console.ReadLine());
-                }
-                catch (FormatException)
-                {
-                    Console.WriteLine("FormatException. Enter an integer 1 through 10");
-                }
-            } while (num < 1 || num > 10);
-            player_number = num;
+                Console.WriteLine("error: 1 to 10 only");
+                return;
+            }
+            Player_number = num;
+            Console.WriteLine("Player: Declared number as {0}!", num);
         }
 
         public int GetNumber()
         {
-            return player_number;
+            Console.WriteLine("Player: Got number: {0}!", Player_number);
+            return Player_number;
         }
 
         public void SwitchNumber(bool choice)
         {
+            // how to check param format
+            Player_has_switched = true;
+            Console.WriteLine("Player: Declared choose {0}!", choice);
             return;
         }
         public bool HasPlayerSwitched()
         {
-            return false;
+            Console.WriteLine("Player: HasPlayerSwitched called");
+            return Player_has_switched;
         }
     }
 }
+

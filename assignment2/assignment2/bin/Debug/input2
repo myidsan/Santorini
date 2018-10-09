@@ -1,1 +1,6 @@
-{"operation-name": "DeclareNumber"}
+{"operation-name": "DeclareNumber", "operation-argument1":"string"}
+{"operation-name": "DeclareNumber", "operation-argument1":11}
+{"operation-name": "GetNumber"}
+{"operation-name": "SwitchNumber"}
+{"operation-name": "HasPlayerSwitched"}
+{"operation-name": "HelloWorld"}
