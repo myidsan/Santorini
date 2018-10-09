@@ -28,7 +28,6 @@ namespace assignment1
 
             while ((line = Console.ReadLine()) != null)
             {
-                //line = file.ReadLine();
                 // using linq
                 // set as different variable for each starters and enders
                 // if the sum is 0, that means string or number
