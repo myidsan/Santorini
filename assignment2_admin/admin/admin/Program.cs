@@ -11,17 +11,8 @@ namespace admin
         {
             // read the commands from STDIN
             JSONEncoder JSONEcoder = new JSONEncoder();
-            JToken JSONcommand = null;
             Admin newAdmin = new Admin();
             newAdmin.StartGame();
-
-            // Dispatch
-            while (newAdmin.AdminNumber != -1) // game started && 
-            {
-                JSONcommand = JSONEncoder.JSONParser();
-                if (JSONcommand == null) break;
-                JObject command = JObject.Parse(JSONcommand.ToString());
-            }
 
             return;
         }

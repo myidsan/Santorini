@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 // additional packages
@@ -10,7 +9,7 @@ namespace admin
 {
     class JSONEncoder
     {
-        public static JToken JSONParser()
+        public JToken JSONParser()
         {
             JToken results = null;
             string line;
