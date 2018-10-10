@@ -71,7 +71,7 @@ namespace admin
         {
             adminWinner = (adminNumber > playerNumber) ? true : false;
             // need to take care of swapMade boolean
-            adminWinner = (playerSwap) ? false : true;
+            adminWinner = (playerSwap) ? !adminWinner : adminWinner;
             if (adminWinner) 
             {
                 Console.WriteLine("Admin Wins");
