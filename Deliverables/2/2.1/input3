@@ -1,0 +1,4 @@
+{"operation-name": "DeclareNumber", "operation-argument1":5}
+{"operation-name": "GetNumber"}
+{"operation-name": "SwitchNumber", "operation-argument1":false, "operation-argument2": true}
+{"operation-name": "HasPlayerSwitched"}
