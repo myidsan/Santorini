@@ -13,38 +13,45 @@ namespace assignment2
         static bool player_has_switched = false;
         public static bool Player_has_switched { get => player_has_switched; set => player_has_switched = value; }
 
-        private static void DeclareNumber(int num)
+        public Player(int num, bool choice)
         {
-            if (num < 1 || num > 10)
-            {
-                Console.WriteLine("error: 1 to 10 only. Try Again.");
-                return;
-            }
             Player_number = num;
-            //Console.WriteLine("Player: Declared number as {0}!", num);
-        }
+            Player_has_switched = choice;
+        } // constructor for test case
 
-        private static int GetNumber()
+        private int DeclareNumber()
         {
-            //Console.WriteLine("Player: Got number: {0}!", Player_number);
+            //int num = Convert.ToInt32(Console.ReadLine()); 
+            //if (num < 1 || num > 10)
+            //{
+            //    Console.WriteLine("error: 1 to 10 only. Try Again.");
+            //    return -1;
+            //} // commented out for testing purpose
+            //Player_number = num;
             Console.WriteLine(Player_number);
             return Player_number;
         }
 
-        private static void SwitchNumber(bool choice)
+        private int GetNumber()
         {
-            Player_has_switched = choice;
-            //Console.WriteLine("Player: Declared SwitchNumber {0}!", Player_has_switched);
-            return;
+            Console.WriteLine(Player_number);
+            return Player_number;
         }
-        private static bool HasPlayerSwitched()
+
+        private bool SwitchNumber()
         {
-            //Console.WriteLine("Player: HasPlayerSwitched called");
+            //bool choice = Convert.ToBoolean(Console.ReadLine()); // commented out for testing purpose
             Console.WriteLine(Player_has_switched);
             return Player_has_switched;
         }
 
-        public static void RunCommand(JObject json)
+        private bool HasPlayerSwitched()
+        {
+            Console.WriteLine(Player_has_switched);
+            return Player_has_switched;
+        }
+
+        public void RunCommand(JObject json)
         {
             string operationName = json["operation-name"].ToString();
 
@@ -52,8 +59,7 @@ namespace assignment2
             switch (operationName)
             {
                 case "DeclareNumber":
-                    int num = (int)json["operation-argument1"];
-                    DeclareNumber(num);
+                    DeclareNumber();
                     break;
 
                 case "GetNumber":
@@ -61,8 +67,7 @@ namespace assignment2
                     break;
 
                 case "SwitchNumber":
-                    bool choice = (bool)json["operation-argument1"];
-                    SwitchNumber(choice);
+                    SwitchNumber();
                     break;
 
                 case "HasPlayerSwitched":
@@ -70,6 +75,7 @@ namespace assignment2
                     break;
 
                 default:
+                    Console.WriteLine("operation command not recognized");
                     break;
             }
             return;
