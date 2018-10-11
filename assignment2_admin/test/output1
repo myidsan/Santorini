@@ -1,0 +1,3 @@
+{"operation-name": "playerPickNumber"}
+{"operation-name": "playerCardSwap"}
+{"operation-name": "isPlayerWinner", "operation-argument1": 8}
