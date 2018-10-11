@@ -1,8 +1,4 @@
-{"operation-name": "DeclareNumber", "operation-argument1":7}
 {"operation-name": "GetNumber"}
-{"operation-name": "GetNumber"}
-{"operation-name": "GetNumber"}
-{"operation-name": "SwitchNumber", "operation-argument1":false}
 {"operation-name": "HasPlayerSwitched"}
-{"operation-name": "SwitchNumber", "operation-argument1":true}
-{"operation-name": "HasPlayerSwitched"}
+{"operation-name": "DeclareNumber"}
+{"operation-name": "SwitchNumber"}

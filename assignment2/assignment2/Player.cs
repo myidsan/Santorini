@@ -13,39 +13,36 @@ namespace assignment2
         static bool player_has_switched = false;
         public static bool Player_has_switched { get => player_has_switched; set => player_has_switched = value; }
 
-        public Player(int num, bool choice)
+        void DeclareNumber()
         {
-            Player_number = num;
-            Player_has_switched = choice;
-        } // constructor for test case
-
-        private int DeclareNumber()
-        {
+            int num = 5; // hard-coded for test purpose
             //int num = Convert.ToInt32(Console.ReadLine()); 
-            //if (num < 1 || num > 10)
-            //{
-            //    Console.WriteLine("error: 1 to 10 only. Try Again.");
-            //    return -1;
-            //} // commented out for testing purpose
-            //Player_number = num;
+            Player_number = num;
+            if (num < 1 || num > 10)
+            {
+                Console.WriteLine("error: 1 to 10 only. Try Again.");
+                return;
+            }
             Console.WriteLine(Player_number);
-            return Player_number;
+            return;
         }
 
-        private int GetNumber()
+        int GetNumber()
         {
             Console.WriteLine(Player_number);
             return Player_number;
         }
 
-        private bool SwitchNumber()
+        void SwitchNumber()
         {
-            //bool choice = Convert.ToBoolean(Console.ReadLine()); // commented out for testing purpose
+            bool choice = true; // hard-coded for test purose
+            //bool choice = Convert.ToBoolean(Console.ReadLine());
+            Player_has_switched = choice;
             Console.WriteLine(Player_has_switched);
-            return Player_has_switched;
+            return;
         }
 
-        private bool HasPlayerSwitched()
+        bool HasPlayerSwitched()
         {
             Console.WriteLine(Player_has_switched);
             return Player_has_switched;
@@ -55,7 +52,6 @@ namespace assignment2
         {
             string operationName = json["operation-name"].ToString();
 
-            // need to check number of inputs params? where?
             switch (operationName)
             {
                 case "DeclareNumber":

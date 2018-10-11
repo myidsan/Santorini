@@ -1,5 +1,5 @@
-{"operation-name": "DeclareNumber", "operation-argument1":5}
-{"operation-name": "MethodNotInPlayer", "operation-argument1":5}
+{"operation-name": "DeclareNumber"}
 {"operation-name": "GetNumber"}
-{"operation-name": "SwitchNumber", "operation-argument1":false}
+{"operation-name": "SwitchNumber"}
 {"operation-name": "HasPlayerSwitched"}
+{"operation-name": "HelloWorld"}
