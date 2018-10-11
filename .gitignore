@@ -14,16 +14,26 @@
 *.userprefs
 
 # Build results
+<<<<<<< HEAD
 [Dd]ebug/
+=======
+# [Dd]ebug/
+>>>>>>> a65a2d0d7777e1f992368984b155ec68d14665aa
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
 x64/
 x86/
 bld/
+<<<<<<< HEAD
 [Bb]in/
 [Oo]bj/
 [Ll]og/
+=======
+#[Bb]in/
+#[Oo]bj/
+#[Ll]og/
+>>>>>>> a65a2d0d7777e1f992368984b155ec68d14665aa
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
