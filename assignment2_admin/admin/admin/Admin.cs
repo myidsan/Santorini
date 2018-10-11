@@ -41,41 +41,44 @@ namespace admin
             swapMade = true;
 
             dynamic[] args = { AdminNumber };
-            SendMessage("playerCheckIsWinner", args);
+            SendMessage("IsPlayerWinner", args);
             playerWinner = GetIsPlayerWinner();
             adminWinner = IsAdminWinner();
 
             if (playerWinner != adminWinner)
             {
-                Console.WriteLine("fair game. Good Bye");
+                Console.WriteLine("fair game");
                 EndGame();
             }
             else
             {
-                Console.WriteLine("Cheating.");
+                Console.WriteLine("Cheating");
                 System.Environment.Exit(1);
             }
 
         }
 
-        public bool GetIsPlayerWinner()
+        bool GetIsPlayerWinner()
         {
             JToken JSONResponse = JSONEcoder.JSONParser();
             try
             {
-                playerWinner = Convert.ToBoolean(JSONResponse.ToString());
-
+                if (JSONResponse.Type == JTokenType.Boolean)
+                {
+                    playerWinner = Convert.ToBoolean(JSONResponse.ToString());
+                }
+                else System.Environment.Exit(1);
             }
             catch (Exception)
             {
-                Console.WriteLine("Invalid attempt: bool convert error");
+                //Console.WriteLine("Invalid attempt: bool convert error");
                 System.Environment.Exit(1);
             }
 
             return playerWinner;
         }
 
-        public bool IsAdminWinner()
+        bool IsAdminWinner()
         {
             adminWinner = (adminNumber > playerNumber) ? true : false;
             // take account of playerSwap boolean
@@ -84,61 +87,71 @@ namespace admin
             return adminWinner;
         }
 
-        public int GetPlayerNumber()
+        int GetPlayerNumber()
         {
             if (gameStart)
             {
-                Console.WriteLine("Player can't change number during a game");
+                //Console.WriteLine("Invalid attempt: Player can't change number during a game");
                 System.Environment.Exit(1);
             }
             JToken JSONResponse = JSONEcoder.JSONParser();
             try
             {
-                playerNumber = Convert.ToInt32(JSONResponse.ToString());
-                if (playerNumber < 1 || playerNumber > 10)
-                {
-                    Console.WriteLine("Inavlid input: 1 to 10");
-                    System.Environment.Exit(1);
+                if (JSONResponse.Type == JTokenType.Integer)
+                { 
+                    playerNumber = Convert.ToInt32(JSONResponse.ToString());
+                    playerNumber = JSONResponse.ToObject<int>();
+                    if (playerNumber < 1 || playerNumber > 10)
+                    {
+                        //Console.WriteLine("Inavlid input: 1 to 10");
+                        System.Environment.Exit(1);
+                    }
                 }
+                else System.Environment.Exit(1);
             }
             catch (Exception)
             {
-                Console.WriteLine("Inavlid atempt: int convert error");
+                //Console.WriteLine("Inavlid attempt: int convert error");
                 System.Environment.Exit(1);
             }
 
             return playerNumber;
         }
 
-        public bool GetPlayerSwap()
+        bool GetPlayerSwap()
         {
             if (swapMade)
             {
-                Console.WriteLine("Player can't change card more than once");
+                //Console.WriteLine("Invalid attempt: Player can't change card more than once");
                 System.Environment.Exit(1);
             }
-            JToken JSONReponse = JSONEcoder.JSONParser();
+            JToken JSONResponse = JSONEcoder.JSONParser();
             try
             {
-                playerSwap = Convert.ToBoolean(JSONReponse.ToString());
+                if (JSONResponse.Type == JTokenType.Boolean)
+                {
+                    playerSwap = Convert.ToBoolean(JSONResponse.ToString());
+                }
+                else System.Environment.Exit(1);
+
             }
             catch (Exception)
             {
-                Console.WriteLine("Invalid attempt: bool convert error");
+                //Console.WriteLine("Invalid attempt: bool convert error");
                 System.Environment.Exit(1);
             }
 
             return playerSwap;
         }
 
-        public void EndGame()
+        void EndGame()
         {
             adminNumber = -1;
             System.Environment.Exit(0);
         }
 
         // helper methods
-        public static void SendMessage(string operationName)
+        static void SendMessage(string operationName)
         {
             Dictionary<string, string> command = new Dictionary<string, string>
             {
@@ -148,7 +161,7 @@ namespace admin
         }
 
 
-        public static void SendMessage(string operationName, dynamic[] args)
+        static void SendMessage(string operationName, dynamic[] args)
         {
             Dictionary<string, dynamic> command = new Dictionary<string, dynamic>
             {
