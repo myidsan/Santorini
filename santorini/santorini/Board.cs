@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace santorini
 {
@@ -27,27 +28,16 @@ namespace santorini
             {"SE", new List<int> {1, 1} }
         };
 
-        public void PrintBoard()
-        {
-            foreach (var row in board)
-            {
-                row.PrintRow();
-            }
-        }
-
         // queries
         public bool NeighboringCellExists(String worker, String direction)
         {
             if (playerPosition.ContainsKey(worker))
             {
-                List<int> workerPosition = playerPosition[worker]; // {row, cell}
-                // parse the direction
                 List<int> desiredDirection = directions[direction];
-                List<int> finalPosition = new List<int>();
+                List<int> finalPosition = GetDesiredPosition(worker, direction);
 
-                for (int i = 0; i < workerPosition.Count; i++)
+                for (int i = 0; i < finalPosition.Count; i++)
                 {
-                    finalPosition.Add(workerPosition[i] + desiredDirection[i]);
                     if (finalPosition[i] < 0 || finalPosition[i] > board.Count)
                     {
                         Console.WriteLine("false");
@@ -65,89 +55,81 @@ namespace santorini
 
         public bool Occupied(String worker, String direction)
         {
-            List<int> workerPosition = playerPosition[worker]; // {row, cell}
-
-            // parse the direction
-            List<int> desiredDirection = directions[direction];
-            List<int> finalPosition = new List<int>();
-
             if (NeighboringCellExists(worker, direction))
             {
-                for (int i = 0; i < workerPosition.Count; i++)
+                List<int> workerPosition = playerPosition[worker]; // {row, cell}
+                List<int> finalPosition = GetDesiredPosition(worker, direction);
+
+                var rowPos = board[finalPosition[0]];
+                var cellPos = rowPos.row[finalPosition[1]];
+
+                if (cellPos.Worker != null)
                 {
-                    finalPosition.Add(workerPosition[i] + desiredDirection[i]);
+                    Console.WriteLine("occupied go somewhere else");
+                    return true;
                 }
+                Console.WriteLine("not occupied");
+                return false;
             }
-            //Console.WriteLine(finalPosition[0]);
-            //Console.WriteLine(finalPosition[1]);
-
-            var rowPos = board[finalPosition[0]];
-            Console.WriteLine(rowPos.row);
-            var cellPos = rowPos.row[finalPosition[1]];
-            Console.WriteLine(cellPos.Worker);
-
-            Console.WriteLine(cellPos.Worker);
-            if (cellPos.Worker != null)
-            {
-                Console.WriteLine("occupied go somewhere else");
-                return true;
-            }
-            return false;
+            throw new Exception("Neighboring cell doesn't exists so it can't be occupied");
         }
 
         public int GetHeight(String worker, String direction)
         {
-            List<int> workerPosition = playerPosition[worker]; // {row, cell}
-
-            // parse the direction
-            List<int> desiredDirection = directions[direction];
-            List<int> finalPosition = new List<int>();
-
+           
             if (NeighboringCellExists(worker, direction))
             {
-                for (int i = 0; i < workerPosition.Count; i++)
-                {
-                    finalPosition.Add(workerPosition[i] + desiredDirection[i]);
-                }
+                List<int> workerPosition = playerPosition[worker]; // {row, cell}
+                List<int> finalPosition = GetDesiredPosition(worker, direction);
+
+                var rowPos = board[finalPosition[0]];
+                var cellPos = rowPos.row[finalPosition[1]];
+                Console.WriteLine(cellPos.Height);
+                return cellPos.Height;
             }
-
-            var rowPos = board[finalPosition[0]];
-            var cellPos = rowPos.row[finalPosition[1]];
-
-            Console.WriteLine(cellPos.Height);
-            return cellPos.Height;
+            throw new Exception("Neighboring cell doesn't exists so it can't have height");
         }
 
         // commands
         public Board Move(String worker, String direction)
         {
-            try
+            if (NeighboringCellExists(worker, direction) && !Occupied(worker,direction))
             {
-
-                List<int> finalPosition = GetWorkerDesiredPosition(worker, direction);
-
                 // init cell position of the worker
                 Row initRowPos = board[playerPosition[worker][0]];
                 Cell initCellPos = initRowPos.row[playerPosition[worker][1]];
                 initCellPos.Worker = null;
 
-
                 // modify worker position
+                List<int> finalPosition = GetDesiredPosition(worker, direction);
                 playerPosition[worker] = finalPosition;
                 Row rowPos = board[finalPosition[0]];
                 Cell cellPos = rowPos.row[finalPosition[1]];
                 cellPos.Worker = worker;
             }
-            catch (Exception)
-            {
-                throw new Exception("can't move there");
-            }
+            return this;
+        }
 
+        public Board Build(String worker, String direction)
+        {
+            List<int> desiredPosition = GetDesiredPosition(worker, direction);
+            desiredPosition.ForEach(item => Console.WriteLine(item));
+            Row rowPos = board[desiredPosition[0]];
+            Cell cellPos = rowPos.row[desiredPosition[1]];
+
+            if (NeighboringCellExists(worker, direction) && !Occupied(worker, direction) && cellPos.Height < 4)
+            {
+                cellPos.Height++;
+            }
+            else 
+            {
+                Console.WriteLine("can't build there");
+            }
             return this;
         }
 
         // helper command
-        List<int> GetWorkerDesiredPosition(String worker, string direction)
+        List<int> GetDesiredPosition(String worker, string direction)
         {
             // returns a valid coordinate that the worker can go 
             // in List<int> format
@@ -158,19 +140,16 @@ namespace santorini
             List<int> desiredDirection = directions[direction];
             List<int> finalPosition = new List<int>();
 
-            if (NeighboringCellExists(worker, direction))
+            for (int i = 0; i < workerPosition.Count; i++)
             {
-                for (int i = 0; i < workerPosition.Count; i++)
-                {
-                    finalPosition.Add(workerPosition[i] + desiredDirection[i]);
-                }
+                finalPosition.Add(workerPosition[i] + desiredDirection[i]);
             }
 
             return finalPosition;
         }
 
         // helper command
-        public void PlacePlayer(String Worker, int row, int col)
+        public void PlaceWorker(String Worker, int row, int col)
         {
             var rowPos = board[row];
             var cellPos = rowPos.row[col];
@@ -184,23 +163,29 @@ namespace santorini
             playerPosition[Worker] = new List<int> {row, col};
 
             // print dictionary for testing purpose
+            //PrintPlayerPosition(playerPosition);
+            return;
+        }
+
+        // helper command
+        public void PrintPlayerPosition(Dictionary<string, List<int>> playerPosition)
+        {
             foreach (KeyValuePair<string, List<int>> kv in playerPosition)
             {
                 Console.WriteLine(kv.Key);
                 kv.Value.ForEach(Console.WriteLine);
             }
-
-            return;
         }
 
-       
+        // helper command
+        public void PrintBoard()
+        {
+            foreach (var row in board)
+            {
+                row.PrintRow();
+            }
+        }
     }
-
-
-
-
-
-
 
 
     public class Row

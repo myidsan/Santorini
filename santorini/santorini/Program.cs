@@ -7,22 +7,26 @@ namespace santorini
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            JSONEncoder parser = new JSONEncoder();
             Board newBoard = new Board();
 
             newBoard.PrintBoard();
-            newBoard.PlacePlayer("white1", 0, 0);
-            newBoard.NeighboringCellExists("white1", "W");
-            newBoard.PlacePlayer("white2", 2, 2);
-            newBoard.NeighboringCellExists("white2", "W");
-            newBoard.PrintBoard();
-            newBoard.Move("white2", "N");
-            newBoard.PrintBoard();
-            newBoard.PlacePlayer("blue1", 1, 3);
-            newBoard.Move("blue1", "W");
-            //newBoard.Occupied("blue1", "W"); // True
-            newBoard.PrintBoard();
-            //newBoard.GetHeight("blue1", "W"); //2
+            newBoard.PlaceWorker("white1", 0, 0);
+            newBoard.PlaceWorker("blue1", 0, 1);
+            newBoard.PlaceWorker("white2", 2, 2);
+            newBoard.PlaceWorker("blue2", 3, 4);
+
+            newBoard.Build("white1", "S");
+            newBoard.NeighboringCellExists("white1", "W"); // false
+            newBoard.NeighboringCellExists("white2", "W"); // True
+
+            //newBoard.Occupied("white2", "NW"); // false
+            //newBoard.PrintBoard();
+            //newBoard.Move("white2", "W"); // {2,1}
+            //newBoard.Move("blue1", "W");
+            //newBoard.PrintBoard();
+            //newBoard.Move("white1", "N"); // original board
+            //newBoard.PrintBoard();
         }
     }
 }
