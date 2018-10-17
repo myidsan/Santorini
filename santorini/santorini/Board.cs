@@ -1,18 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace santorini
 {
     public class Board
     {
-        IList<Row> board = new List<Row>() {
-                new Row(),
-                new Row(),
-                new Row(),
-                new Row(),
-                new Row()
-            };
+        IList<Row> board = new List<Row>();
+
+        public Board(){}
+
+        public Board(JArray boardArray)
+        {
+            foreach (var item in boardArray)
+            {
+                Row newRow = new Row(item);
+                board.Add(newRow);
+            }
+            Console.WriteLine(board.Count);
+        }
 
         // mock-data
         Dictionary<string, List<int>> playerPosition = new Dictionary<string, List<int>>();
@@ -28,8 +36,10 @@ namespace santorini
             {"SE", new List<int> {1, 1} }
         };
 
+
+
         // queries
-        public bool NeighboringCellExists(String worker, String direction)
+        public bool NeighboringCellExists(string worker, string direction)
         {
             if (playerPosition.ContainsKey(worker))
             {
@@ -53,7 +63,7 @@ namespace santorini
             return true;
         }
 
-        public bool Occupied(String worker, String direction)
+        public bool Occupied(string worker, string direction)
         {
             if (NeighboringCellExists(worker, direction))
             {
@@ -74,7 +84,7 @@ namespace santorini
             throw new Exception("Neighboring cell doesn't exists so it can't be occupied");
         }
 
-        public int GetHeight(String worker, String direction)
+        public int GetHeight(string worker, string direction)
         {
            
             if (NeighboringCellExists(worker, direction))
@@ -91,7 +101,7 @@ namespace santorini
         }
 
         // commands
-        public Board Move(String worker, String direction)
+        public Board Move(string worker, string direction)
         {
             if (NeighboringCellExists(worker, direction) && !Occupied(worker,direction))
             {
@@ -110,7 +120,7 @@ namespace santorini
             return this;
         }
 
-        public Board Build(String worker, String direction)
+        public Board Build(string worker, string direction)
         {
             List<int> desiredPosition = GetDesiredPosition(worker, direction);
             desiredPosition.ForEach(item => Console.WriteLine(item));
@@ -129,11 +139,8 @@ namespace santorini
         }
 
         // helper command
-        List<int> GetDesiredPosition(String worker, string direction)
+        List<int> GetDesiredPosition(string worker, string direction)
         {
-            // returns a valid coordinate that the worker can go 
-            // in List<int> format
-
             // get current coordinate of the player {row, cell}
             List<int> workerPosition = playerPosition[worker];
             // parse the direction
@@ -149,9 +156,10 @@ namespace santorini
         }
 
         // helper command
-        public void PlaceWorker(String Worker, int row, int col)
+        public void PlaceWorker(string Worker, int row, int col)
         {
-            var rowPos = board[row];
+
+            var rowPos = board[0];
             var cellPos = rowPos.row[col];
             if (cellPos.Worker != null)
             {
@@ -185,44 +193,13 @@ namespace santorini
                 row.PrintRow();
             }
         }
-    }
 
-
-    public class Row
-    {
-        public IList<Cell> row = new List<Cell>() {
-                new Cell(),
-                new Cell(),
-                new Cell(),
-                new Cell(),
-                new Cell()
-            };
-
-        public void PrintRow()
+        public void RunCommand(string methodName)
         {
-            string row_string = "";
-            foreach (var cell in row)
-            {
-                row_string += (cell.Height, cell.Worker) + " ";
-            }
-            Console.WriteLine(row_string);
-        }
-    }
-
-    public class Cell
-    {
-        private int height = 0;
-        private string worker = null;
-
-        public int Height { get => height; set => height = value; }
-        public string Worker { get => worker; set => worker = value; }
-
-        public Cell() { }
-
-        public Cell(int pHeight, string pWorker) 
-        {
-            Height = pHeight;
-            Worker = pWorker;
+            MethodInfo mi = this.GetType().GetMethod(methodName);
+            // null - no param for the method call
+            // or pass in array of paramters
+            mi.Invoke(this, null);
         }
     }
 }

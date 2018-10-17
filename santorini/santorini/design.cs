@@ -8,7 +8,7 @@ using System.Diagnostics.Contracts;
 /// and build on the board.
 /// it contains information that the board should be aware of.
 /// </summary>
-abstract class Board
+class Board
 {
     IList<Row> board = new List<Row>() {
                 new Row(),

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Sockets;
 // additional packages
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,19 +8,17 @@ namespace santorini
 {
     class JSONEncoder
     {
+        JsonEncode printer = new JsonEncode();
         public JToken JSONParser()
         {
+            Queue<JToken> test = new Queue<JToken>();
             JToken results = null;
             string line;
             string result = "";
-            //int balance = 0;
 
-            Console.WriteLine("Reading data...");
-            while ((line = Console.ReadLine()) != "")
+            while ((line = Console.ReadLine()) != null)
             {
-                Console.WriteLine("waiting for end");
                 result += line;
-
                 try
                 {
                     results = JToken.Parse(result);
@@ -34,6 +29,9 @@ namespace santorini
                     continue;
                 }
             }
+            //Console.WriteLine("1: {0}",test.Count);
+            //Console.WriteLine("2: {0}",test);
+            //printer.PrintOut(test);
             return results;
         }
 
@@ -42,7 +40,7 @@ namespace santorini
             public int index;
             public JToken value;
 
-            static public void PrintOut(Queue<JToken> results)
+            public void PrintOut(Queue<JToken> results)
             {
                 while (results.Count != 0)
                 {
@@ -53,7 +51,6 @@ namespace santorini
                     };
                     string JSONresult = JsonConvert.SerializeObject(JsonObject);
                     Console.WriteLine(JSONresult);
-
                 }
                 return;
             }
