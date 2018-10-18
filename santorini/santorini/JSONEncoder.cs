@@ -29,9 +29,6 @@ namespace santorini
                     continue;
                 }
             }
-            //Console.WriteLine("1: {0}",test.Count);
-            //Console.WriteLine("2: {0}",test);
-            //printer.PrintOut(test);
             return results;
         }
 
@@ -50,6 +47,7 @@ namespace santorini
                         value = results.Dequeue()
                     };
                     string JSONresult = JsonConvert.SerializeObject(JsonObject);
+                    //object JSON = JsonConvert.DeserializeObject(JSONresult);
                     Console.WriteLine(JSONresult);
                 }
                 return;

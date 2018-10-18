@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Reflection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace santorini
@@ -9,7 +10,7 @@ namespace santorini
     public class Board
     {
         IList<Row> board = new List<Row>();
-
+        JSONEncoder encoder = new JSONEncoder();
         public Board(JArray boardArray)
         {
             int rowIndex = 0;
@@ -35,8 +36,19 @@ namespace santorini
             {"SE", new List<int> {1, 1} }
         };
 
-        // queries
+        /// queries
         public bool NeighboringCellExists(string worker, string direction)
+        {
+            if (NeighboringCellExistsHelper(worker, direction))
+            {
+                Console.WriteLine(true);
+                return true;
+            }
+            Console.WriteLine(false);
+            return false;
+        }
+
+        public bool NeighboringCellExistsHelper(string worker, string direction)
         {
             if (playerPosition.ContainsKey(worker))
             {
@@ -45,9 +57,8 @@ namespace santorini
 
                 for (int i = 0; i < finalPosition.Count; i++)
                 {
-                    if (finalPosition[i] < 0 || finalPosition[i] > board.Count-1)
+                    if (finalPosition[i] < 0 || finalPosition[i] > board.Count - 1)
                     {
-                        Console.WriteLine("false");
                         return false;
                     }
                 }
@@ -56,13 +67,23 @@ namespace santorini
             {
                 throw new Exception(worker + " was not found");
             }
-                
             return true;
         }
 
         public bool Occupied(string worker, string direction)
         {
-            if (NeighboringCellExists(worker, direction))
+            if (OccupiedHelper(worker, direction))
+            {
+                Console.WriteLine(true);
+                return true;
+            }
+            Console.WriteLine(false);
+            return false;
+        }
+
+        public bool OccupiedHelper(string worker, string direction)
+        {
+            if (NeighboringCellExistsHelper(worker, direction))
             {
                 List<int> workerPosition = playerPosition[worker]; // {row, cell}
                 List<int> finalPosition = GetDesiredPosition(worker, direction);
@@ -72,10 +93,8 @@ namespace santorini
 
                 if (cellPos.Worker != null)
                 {
-                    Console.WriteLine("occupied go somewhere else");
                     return true;
                 }
-                Console.WriteLine("not occupied");
                 return false;
             }
             throw new Exception("Neighboring cell doesn't exists so it can't be occupied");
@@ -84,7 +103,7 @@ namespace santorini
         public int GetHeight(string worker, string direction)
         {
            
-            if (NeighboringCellExists(worker, direction))
+            if (NeighboringCellExistsHelper(worker, direction))
             {
                 List<int> workerPosition = playerPosition[worker]; // {row, cell}
                 List<int> finalPosition = GetDesiredPosition(worker, direction);
@@ -97,10 +116,10 @@ namespace santorini
             throw new Exception("Neighboring cell doesn't exists so it can't have height");
         }
 
-        // commands
+        /// commands
         public Board Move(string worker, string direction)
         {
-            if (NeighboringCellExists(worker, direction) && !Occupied(worker,direction))
+            if (NeighboringCellExistsHelper(worker, direction) && !OccupiedHelper(worker,direction))
             {
                 // init cell position of the worker
                 Row initRowPos = board[playerPosition[worker][0]];
@@ -114,12 +133,13 @@ namespace santorini
                 Cell cellPos = rowPos.row[finalPosition[1]];
                 cellPos.Worker = worker;
             }
+            this.PrintBoard();
             return this;
         }
 
         public Board Build(string worker, string direction)
         {
-            if (NeighboringCellExists(worker, direction) && !Occupied(worker, direction))
+            if (NeighboringCellExistsHelper(worker, direction) && !OccupiedHelper(worker, direction))
             {
                 List<int> desiredPosition = GetDesiredPosition(worker, direction);
                 Row rowPos = board[desiredPosition[0]];
@@ -128,16 +148,12 @@ namespace santorini
                 {
                     cellPos.Height++;
                 }
-
             }
-            else 
-            {
-                Console.WriteLine("can't build there");
-            }
+            this.PrintBoard();
             return this;
         }
 
-        // helper command starts
+        /// helper command starts
         List<int> GetDesiredPosition(string worker, string direction)
         {
             // get current coordinate of the player {row, cell}
@@ -150,7 +166,6 @@ namespace santorini
             {
                 finalPosition.Add(workerPosition[i] + desiredDirection[i]);
             }
-
             return finalPosition;
         }
 
@@ -168,8 +183,6 @@ namespace santorini
             // update dictionary
             playerPosition[Worker] = new List<int> {row, col};
 
-            // print dictionary for testing purpose
-            //PrintPlayerPosition(playerPosition);
             return;
         }
         
@@ -184,13 +197,20 @@ namespace santorini
         
         public void PrintBoard()
         {
+            JArray result = new JArray();
             foreach (var row in board)
             {
-                row.PrintRow();
-            }
-        }
-        // helper command ends
+                JArray rowArr = row.PrintRow();
+                result.Add(rowArr);
 
+            }
+            string JSONresult = JsonConvert.SerializeObject(result);
+            Console.WriteLine(JSONresult);
+        }
+        /// helper command ends
+
+
+        /// Driver
         public void RunCommand(JArray action)
         {
             List<string> argsList = new List<string>();
@@ -212,13 +232,13 @@ namespace santorini
             {
                 args = null;
             }
-            mi.Invoke(this, args);
+            var result = mi.Invoke(this, args);
         }
+
         public string ParseMethodName(string name)
         {
             string[] parsing = name.Split('?');
             string[] parsingTwo = parsing[0].Split('-');
-            //Console.WriteLine("[{0}]", string.Join(", ", parsingTwo));
             string command = "";
             foreach (var item in parsingTwo)
             {

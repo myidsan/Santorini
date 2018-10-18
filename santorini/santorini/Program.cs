@@ -21,10 +21,7 @@ namespace santorini
                 Board newBoard = new Board((JArray)input[0]);
                 JArray action = (JArray)input[1];
                 newBoard.RunCommand(action);
-                newBoard.PrintBoard();
             }
-
-            Console.WriteLine("terminating the program successfully...");
             return;
         }
     }

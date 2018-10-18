@@ -39,14 +39,18 @@ namespace santorini
 
 
 
-        public void PrintRow()
+        public JArray PrintRow()
         {
-            string row_string = "";
+            List<List<dynamic>> result = new List<List<dynamic>>();
             foreach (var cell in row)
             {
-                row_string += (cell.Height, cell.Worker) + " ";
+                List<dynamic> temp = new List<dynamic>();
+                temp.Add(cell.Height);
+                temp.Add(cell.Worker);
+
+                result.Add(temp);
             }
-            Console.WriteLine(row_string);
+            return JArray.FromObject(result);
         }
     }
 
