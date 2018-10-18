@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using Newtonsoft.Json.Linq;
 
 /// <summary>
 /// This class implements the board of the game.
@@ -10,13 +11,17 @@ using System.Diagnostics.Contracts;
 /// </summary>
 class Board
 {
-    IList<Row> board = new List<Row>() {
-                new Row(),
-                new Row(),
-                new Row(),
-                new Row(),
-                new Row()
-            };
+    IList<Row> board = new List<Row>() { };
+
+    /// <summary>
+    /// constructor to parse the given input into Board class structure
+    /// contract: the input type should be an JArray
+    /// </summary>
+    /// <returns>
+    /// A Board class instance
+    /// </returns>
+    public Board(JArray boardArray) { }
+
     // dictionary_ key: String worker, value: List<int> {row, col}
     Dictionary<string, List<int>> playerPosition;
 

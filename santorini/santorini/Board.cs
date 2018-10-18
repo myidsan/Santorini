@@ -10,20 +10,19 @@ namespace santorini
     {
         IList<Row> board = new List<Row>();
 
-        public Board(){}
-
         public Board(JArray boardArray)
         {
+            int rowIndex = 0;
             foreach (var item in boardArray)
             {
-                Row newRow = new Row(item);
+                Row newRow = new Row(item, rowIndex);
                 board.Add(newRow);
+                rowIndex++;
             }
-            Console.WriteLine(board.Count);
         }
 
-        // mock-data
-        Dictionary<string, List<int>> playerPosition = new Dictionary<string, List<int>>();
+        static Dictionary<string, List<int>> playerPosition = new Dictionary<string, List<int>>();
+        static public Dictionary<string, List<int>> PlayerPosition { get => playerPosition; set => playerPosition = value; }
 
         Dictionary<string, List<int>> directions = new Dictionary<string, List<int>>(){
             {"N", new List<int> {-1, 0} },
@@ -36,8 +35,6 @@ namespace santorini
             {"SE", new List<int> {1, 1} }
         };
 
-
-
         // queries
         public bool NeighboringCellExists(string worker, string direction)
         {
@@ -48,7 +45,7 @@ namespace santorini
 
                 for (int i = 0; i < finalPosition.Count; i++)
                 {
-                    if (finalPosition[i] < 0 || finalPosition[i] > board.Count)
+                    if (finalPosition[i] < 0 || finalPosition[i] > board.Count-1)
                     {
                         Console.WriteLine("false");
                         return false;
@@ -122,14 +119,16 @@ namespace santorini
 
         public Board Build(string worker, string direction)
         {
-            List<int> desiredPosition = GetDesiredPosition(worker, direction);
-            desiredPosition.ForEach(item => Console.WriteLine(item));
-            Row rowPos = board[desiredPosition[0]];
-            Cell cellPos = rowPos.row[desiredPosition[1]];
-
-            if (NeighboringCellExists(worker, direction) && !Occupied(worker, direction) && cellPos.Height < 4)
+            if (NeighboringCellExists(worker, direction) && !Occupied(worker, direction))
             {
-                cellPos.Height++;
+                List<int> desiredPosition = GetDesiredPosition(worker, direction);
+                Row rowPos = board[desiredPosition[0]];
+                Cell cellPos = rowPos.row[desiredPosition[1]];
+                if (cellPos.Height < 4)
+                {
+                    cellPos.Height++;
+                }
+
             }
             else 
             {
@@ -138,7 +137,7 @@ namespace santorini
             return this;
         }
 
-        // helper command
+        // helper command starts
         List<int> GetDesiredPosition(string worker, string direction)
         {
             // get current coordinate of the player {row, cell}
@@ -155,7 +154,6 @@ namespace santorini
             return finalPosition;
         }
 
-        // helper command
         public void PlaceWorker(string Worker, int row, int col)
         {
 
@@ -174,8 +172,7 @@ namespace santorini
             //PrintPlayerPosition(playerPosition);
             return;
         }
-
-        // helper command
+        
         public void PrintPlayerPosition(Dictionary<string, List<int>> playerPosition)
         {
             foreach (KeyValuePair<string, List<int>> kv in playerPosition)
@@ -184,8 +181,7 @@ namespace santorini
                 kv.Value.ForEach(Console.WriteLine);
             }
         }
-
-        // helper command
+        
         public void PrintBoard()
         {
             foreach (var row in board)
@@ -193,13 +189,42 @@ namespace santorini
                 row.PrintRow();
             }
         }
+        // helper command ends
 
-        public void RunCommand(string methodName)
+        public void RunCommand(JArray action)
         {
-            MethodInfo mi = this.GetType().GetMethod(methodName);
+            List<string> argsList = new List<string>();
+            string methodName = action[0].ToString();
+
+            // need to parse the command into C# name style
+            string command = ParseMethodName(methodName);
+           
+            for (int i = 1; i < action.Count; i++)
+            {
+                argsList.Add(action[i].ToString());
+            }
+            string[] args = argsList.ToArray();
+
+            MethodInfo mi = this.GetType().GetMethod(command);
             // null - no param for the method call
             // or pass in array of paramters
-            mi.Invoke(this, null);
+            if (args.Length == 0)
+            {
+                args = null;
+            }
+            mi.Invoke(this, args);
+        }
+        public string ParseMethodName(string name)
+        {
+            string[] parsing = name.Split('?');
+            string[] parsingTwo = parsing[0].Split('-');
+            //Console.WriteLine("[{0}]", string.Join(", ", parsingTwo));
+            string command = "";
+            foreach (var item in parsingTwo)
+            {
+                command += item.Substring(0, 1).ToUpper() + item.Substring(1);
+            }
+            return command;
         }
     }
 }

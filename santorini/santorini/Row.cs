@@ -10,8 +10,9 @@ namespace santorini
 
         public Row() {}
 
-        public Row(JToken rowArray)
+        public Row(JToken rowArray, int rowIndex)
         {
+            int colIndex = 0;
             foreach (var cell in rowArray)
             {
                 var height = 0;
@@ -20,15 +21,19 @@ namespace santorini
                 {
                     height = (int)cell[0];
                     worker = (string)cell[1];
+                    if (worker != null)
+                    {
+                        Board.PlayerPosition[worker] = new List<int>() { rowIndex, colIndex };
+                    }
                 }
                 else
                 {
                     height = (int)cell;
                     worker = null;
                 }
-
                 Cell newCell = new Cell(height, worker);
                 row.Add(newCell);
+                colIndex++;
             }
         }
 
