@@ -7,23 +7,28 @@ using Newtonsoft.Json.Linq;
 
 namespace santorini
 {
-    public class Board
-    {
-        IList<Row> board = new List<Row>();
+    public class Board : design<Board>
+    { 
+        Cell[,] board = new Cell[5,5];
+        static Dictionary<string, List<int>> playerPosition;
+        static public Dictionary<string, List<int>> PlayerPosition { get => playerPosition; set => playerPosition = value; }
+
         JSONEncoder encoder = new JSONEncoder();
         public Board(JArray boardArray)
         {
-            int rowIndex = 0;
-            foreach (var item in boardArray)
+            playerPosition = new Dictionary<string, List<int>>();
+
+            int rowLength = board.GetLength(0);
+            int colLength = board.GetLength(1);
+
+            for (int i = 0; i < rowLength; i++)
             {
-                Row newRow = new Row(item, rowIndex);
-                board.Add(newRow);
-                rowIndex++;
+                for (int j = 0; j < colLength; j++)
+                {
+                    board[i, j] = new Cell(boardArray[i][j], i ,j);
+                }
             }
         }
-
-        static Dictionary<string, List<int>> playerPosition = new Dictionary<string, List<int>>();
-        static public Dictionary<string, List<int>> PlayerPosition { get => playerPosition; set => playerPosition = value; }
 
         Dictionary<string, List<int>> directions = new Dictionary<string, List<int>>(){
             {"N", new List<int> {-1, 0} },
@@ -57,7 +62,7 @@ namespace santorini
 
                 for (int i = 0; i < finalPosition.Count; i++)
                 {
-                    if (finalPosition[i] < 0 || finalPosition[i] > board.Count - 1)
+                    if (finalPosition[i] < 0 || finalPosition[i] > board.Length - 1)
                     {
                         return false;
                     }
@@ -88,8 +93,7 @@ namespace santorini
                 List<int> workerPosition = playerPosition[worker]; // {row, cell}
                 List<int> finalPosition = GetDesiredPosition(worker, direction);
 
-                var rowPos = board[finalPosition[0]];
-                var cellPos = rowPos.row[finalPosition[1]];
+                var cellPos = board[finalPosition[0], finalPosition[1]];
 
                 if (cellPos.Worker != null)
                 {
@@ -108,8 +112,7 @@ namespace santorini
                 List<int> workerPosition = playerPosition[worker]; // {row, cell}
                 List<int> finalPosition = GetDesiredPosition(worker, direction);
 
-                var rowPos = board[finalPosition[0]];
-                var cellPos = rowPos.row[finalPosition[1]];
+                var cellPos = board[finalPosition[0], finalPosition[1]];
                 Console.WriteLine(cellPos.Height);
                 return cellPos.Height;
             }
@@ -117,44 +120,40 @@ namespace santorini
         }
 
         /// commands
-        public Board Move(string worker, string direction)
+        public Cell[,] Move(string worker, string direction)
         {
             if (NeighboringCellExistsHelper(worker, direction) && !OccupiedHelper(worker,direction))
             {
                 // init cell position of the worker
-                Row initRowPos = board[playerPosition[worker][0]];
-                Cell initCellPos = initRowPos.row[playerPosition[worker][1]];
-                initCellPos.Worker = null;
+                List<int> initialPosition = playerPosition[worker];
+                board[initialPosition[0], initialPosition[1]].Worker = null;
 
                 // modify worker position
                 List<int> finalPosition = GetDesiredPosition(worker, direction);
                 playerPosition[worker] = finalPosition;
-                Row rowPos = board[finalPosition[0]];
-                Cell cellPos = rowPos.row[finalPosition[1]];
-                cellPos.Worker = worker;
+                board[finalPosition[0], finalPosition[1]].Worker = worker;
             }
             this.PrintBoard();
-            return this;
+            return board;
         }
 
-        public Board Build(string worker, string direction)
+        public Cell[,] Build(string worker, string direction)
         {
             if (NeighboringCellExistsHelper(worker, direction) && !OccupiedHelper(worker, direction))
             {
                 List<int> desiredPosition = GetDesiredPosition(worker, direction);
-                Row rowPos = board[desiredPosition[0]];
-                Cell cellPos = rowPos.row[desiredPosition[1]];
+                Cell cellPos = board[desiredPosition[0], desiredPosition[1]];
                 if (cellPos.Height < 4)
                 {
                     cellPos.Height++;
                 }
             }
             this.PrintBoard();
-            return this;
+            return board;
         }
 
         /// helper command starts
-        List<int> GetDesiredPosition(string worker, string direction)
+        public List<int> GetDesiredPosition(string worker, string direction)
         {
             // get current coordinate of the player {row, cell}
             List<int> workerPosition = playerPosition[worker];
@@ -171,9 +170,8 @@ namespace santorini
 
         public void PlaceWorker(string Worker, int row, int col)
         {
+            var cellPos = board[row, col];
 
-            var rowPos = board[0];
-            var cellPos = rowPos.row[col];
             if (cellPos.Worker != null)
             {
                 Console.WriteLine("occupied by other worker");
@@ -197,15 +195,23 @@ namespace santorini
         
         public void PrintBoard()
         {
-            JArray result = new JArray();
-            foreach (var row in board)
-            {
-                JArray rowArr = row.PrintRow();
-                result.Add(rowArr);
+            //JArray result = new JArray();
+            //foreach (var row in board)
+            //{
+            //    JArray rowArr = row.PrintRow();
+            //    result.Add(rowArr);
 
+            //}
+            //string JSONresult = JsonConvert.SerializeObject(result);
+            //Console.WriteLine(JSONresult);
+            for (int i = 0; i < this.board.GetLength(0); i++)
+            {
+                for (int j = 0; j < this.board.GetLength(1); j++)
+                {
+                    board[i, j].PrintCell();
+                }
+                Console.WriteLine(Environment.NewLine);
             }
-            string JSONresult = JsonConvert.SerializeObject(result);
-            Console.WriteLine(JSONresult);
         }
         /// helper command ends
 
