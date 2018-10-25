@@ -40,10 +40,6 @@ namespace santorini
             //RuleChecker checker = new RuleChecker();
             JToken input;
 
-            // E2E_testing
-
-
-
             // dispatch -- reading from STDIN
             while (true)
             {

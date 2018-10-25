@@ -13,7 +13,6 @@ namespace santorini
         static public Cell[,] Board_ { get => board; set => board = value; }
 
         JSONEncoder encoder = new JSONEncoder();
-        RuleChecker ruleCheck = new RuleChecker();
 
         static Dictionary<string, List<int>> playerPosition;
         static public Dictionary<string, List<int>> PlayerPosition { get => playerPosition; set => playerPosition = value; }
@@ -44,25 +43,6 @@ namespace santorini
             {"SW", new List<int> {1, -1} },
             {"SE", new List<int> {1, 1} }
         };
-
-        public static bool IsValidVerticalMove(string worker, string direction)
-        {
-            if (PlayerPosition.ContainsKey(worker) && directions.ContainsKey(direction))
-            {
-                List<int> currPosition = PlayerPosition[worker];
-                int CurrentCellHeight = Board_[currPosition[0], currPosition[1]].Height;
-
-                List<int> finalPosition = GetDesiredPosition(worker, direction);
-                int desiredCellHeight = Board_[finalPosition[0], finalPosition[1]].Height;
-
-                if (desiredCellHeight - CurrentCellHeight > 1) return false;
-            }
-            else
-            {
-                throw new Exception("NeighboringCellExistsHelper: Invalid input parameter");
-            }
-            return true;
-        }
 
         /// queries
         public static bool NeighboringCellExists(string worker, string direction)
