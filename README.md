@@ -1,7 +1,7 @@
 # team2
 
 ## How to Run 
-`./board-test-harness` 
+`./rule-checker-test-harness` 
 
 ## File Structure
 Everything for class is in the `Deliverable` directory.
