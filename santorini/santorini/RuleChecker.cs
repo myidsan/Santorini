@@ -12,7 +12,7 @@ namespace santorini
 
             if (Board.PlayerPosition.Count != 4) 
             {
-                Console.WriteLine("Board is invalid: number of player is {0}", Board.PlayerPosition.Count);
+                //Console.WriteLine("Board is invalid: number of player is {0}", Board.PlayerPosition.Count);
                 return false;
             }
 
@@ -20,15 +20,10 @@ namespace santorini
             {
                 if (!Board.PlayerPosition.ContainsKey(player))
                 {
-                    Console.WriteLine("Board is invalid: doesnt contain {0}", player);
+                    //Console.WriteLine("Board is invalid: doesnt contain {0}", player);
                     return false;
                 }
             }
-            return true;
-        }
-
-        static public bool IsCellValid()
-        {
             return true;
         }
 

@@ -10,7 +10,7 @@ using Newtonsoft.Json.Linq;
 // and build on the board.
 // it contains information that the board should be aware of.
 // </summary>
-class Board
+public class Board
 {
     static Cell[,] board = new Cell[5, 5];
     static public Cell[,] Board_ { get => board; set => board = value; }
@@ -68,7 +68,7 @@ class Board
     ///           Occupied --> false
     /// </summary>
     /// <returns>
-    /// The state of the board
+    /// The Board_ field in the Board class
     /// </returns>
     Cell[,] Move(String worker, String direction) { return Board_; }
 
@@ -80,7 +80,7 @@ class Board
     ///           Occupied --> false
     /// </summary>
     /// <returns>
-    /// The state of the board
+    /// The Board_ field in the Board class
     /// </returns>
     Cell[,] Build(String worker, String direction) { return Board_; }
 
@@ -102,7 +102,7 @@ class Board
     ///           Occupied --> false
     /// </summary>
     /// <returns>
-    /// The state of the board
+    /// returns nothing. Prints out the Board_ to the console
     /// </returns>
     void PlaceWorker(String Worker, int row, int col) { return; }
 
@@ -156,7 +156,6 @@ public class RuleChecker
     }
 
     public bool NeighboringCellExistsHelper(string worker, string direction) { return true; }
-
 
     public bool OccupiedHelper(string worker, string direction) { return true; }
 
