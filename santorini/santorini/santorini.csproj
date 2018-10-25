@@ -46,10 +46,15 @@
     <Compile Include="JSONEncoder.cs" />
     <Compile Include="RuleChecker.cs" />
     <Compile Include="Cell.cs" />
-    <Compile Include="SantoriniTest.cs" />
+    <Compile Include="tests\RuleCheckerTest.cs" />
+    <Compile Include="designPlayer.cs" />
+    <Compile Include="tests\ProgramTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="tests\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

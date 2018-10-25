@@ -45,6 +45,25 @@ namespace santorini
             {"SE", new List<int> {1, 1} }
         };
 
+        public static bool IsValidVerticalMove(string worker, string direction)
+        {
+            if (PlayerPosition.ContainsKey(worker) && directions.ContainsKey(direction))
+            {
+                List<int> currPosition = PlayerPosition[worker];
+                int CurrentCellHeight = Board_[currPosition[0], currPosition[1]].Height;
+
+                List<int> finalPosition = GetDesiredPosition(worker, direction);
+                int desiredCellHeight = Board_[finalPosition[0], finalPosition[1]].Height;
+
+                if (desiredCellHeight - CurrentCellHeight > 1) return false;
+            }
+            else
+            {
+                throw new Exception("NeighboringCellExistsHelper: Invalid input parameter");
+            }
+            return true;
+        }
+
         /// queries
         public static bool NeighboringCellExists(string worker, string direction)
         {
@@ -55,14 +74,14 @@ namespace santorini
 
         public static bool NeighboringCellExistsHelper(string worker, string direction)
         {
-            if (Board.PlayerPosition.ContainsKey(worker) && directions.ContainsKey(direction))
+            if (PlayerPosition.ContainsKey(worker) && directions.ContainsKey(direction))
             {
-                List<int> desiredDirection = Board.directions[direction];
+                List<int> desiredDirection = directions[direction];
                 List<int> finalPosition = GetDesiredPosition(worker, direction);
 
                 for (int i = 0; i < finalPosition.Count; i++)
                 {
-                    if (finalPosition[i] < 0 || finalPosition[i] > Board.Board_.Length - 1)
+                    if (finalPosition[i] < 0 || finalPosition[i] > Board_.GetLength(0) - 1)
                     {
                         return false;
                     }
@@ -97,7 +116,7 @@ namespace santorini
                 }
                 return false;
             }
-            throw new Exception("Neighboring cell doesn't exists so it can't be occupied");
+            throw new IndexOutOfRangeException("Neighboring cell doesn't exists so it can't be occupied");
         }
 
         public static int GetHeight(string worker, string direction)
@@ -108,14 +127,14 @@ namespace santorini
                 List<int> finalPosition = GetDesiredPosition(worker, direction);
 
                 var cellPos = Board_[finalPosition[0], finalPosition[1]];
-                Console.WriteLine(cellPos.Height);
+                //Console.WriteLine(cellPos.Height);
                 return cellPos.Height;
             }
-            throw new Exception("Neighboring cell doesn't exists so it can't have height");
+            throw new IndexOutOfRangeException("Neighboring cell doesn't exists so it can't have height");
         }
 
         /// commands
-        public Cell[,] Move(string worker, string direction)
+        public static Cell[,] Move(string worker, string direction)
         {
             if (NeighboringCellExistsHelper(worker, direction) && !OccupiedHelper(worker,direction))
             {
@@ -128,11 +147,11 @@ namespace santorini
                 playerPosition[worker] = finalPosition;
                 board[finalPosition[0], finalPosition[1]].Worker = worker;
             }
-            PrintBoard();
+            //PrintBoard();
             return Board_;
         }
 
-        public Cell[,] Build(string worker, string direction)
+        public static Cell[,] Build(string worker, string direction)
         {
             if (NeighboringCellExistsHelper(worker, direction) && !OccupiedHelper(worker, direction))
             {

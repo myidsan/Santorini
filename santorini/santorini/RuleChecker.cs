@@ -34,11 +34,14 @@ namespace santorini
 
         public static bool IsValidMove(string worker, string[] direction)
         {
-            // if NeighborCell in given direction exists --  is this a board thing
-            if (!Board.NeighboringCellExists(worker, direction[0])) return false;
+            // if NeighborCell does not exists
+            if (!Board.NeighboringCellExistsHelper(worker, direction[0])) return false;
 
             // if NeighborCell in given direction is not occupied
-            if (Board.Occupied(worker, direction[0])) return false;
+            if (Board.OccupiedHelper(worker, direction[0])) return false;
+
+            // if NeighborCell's height is is leq to CurrentCell's height
+            if (!Board.IsValidVerticalMove(worker, direction[0])) return false;
 
             // moving direction is undefined
             if (!Board.directions.ContainsKey(direction[0])) return false;
@@ -48,14 +51,16 @@ namespace santorini
 
         public static bool IsValidBuild(string worker, string[] direction)
         {
+            // if NeighborCell does not exists
+            if (!Board.NeighboringCellExistsHelper(worker, direction[1])) return false;
+
             // if NeighborCell is not occupied to build
-            if (Board.Occupied(worker, direction[1])) return false;
+            if (Board.OccupiedHelper(worker, direction[1])) return false;
 
             // if NeighborCell height is less than 4
             if (Board.GetHeight(worker, direction[1]) >= 4) return false;
 
             return true;
         }
-
     }
 }

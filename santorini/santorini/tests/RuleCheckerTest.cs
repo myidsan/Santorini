@@ -4,7 +4,7 @@ using System;
 namespace santorini
 {
     [TestFixture()]
-    public class SantoriniTest
+    public class RuleCheckerTest
     {
         [Test()]
         public void TestValidBoard()
@@ -102,8 +102,49 @@ namespace santorini
         }
 
         [Test()]
+        public void TestValidVerticalMove()
+        {
+            string validBoard = @"[
+                                [[2,'white1'],[0,null],[0,null],[0,null],[0,null]], " +
+                             "[[0, null],[0,null],[3,null],[2,null],[0,null]]," +
+                             "[[0,null],[0,null],[1,'white2'],[0,'blue2'],[0,null]]," +
+                             "[[0,null],[0,null],[1,null],[0,null],[0,null]]," +
+                             "[[0,null],[0,null],[0,null],[0,'blue1'],[0,null]]" +
+                           "]";
+            Board newBoard = new Board(JArray.Parse(validBoard));
+            Assert.IsFalse(RuleChecker.IsValidMove("white2", new string[] { "N", "N" })); // more than two up
+            Assert.IsTrue(RuleChecker.IsValidMove("white2", new string[] { "W", "N" })); // going down
+            Assert.IsTrue(RuleChecker.IsValidMove("white2", new string[] { "NE", "N" })); // going up one
+            Assert.IsTrue(RuleChecker.IsValidMove("white2", new string[] { "S", "N" })); // same level
+            Assert.IsTrue(RuleChecker.IsValidMove("white1", new string[] { "S", "N" })); // going down two
+        }
+
+
+        [Test()]
         public void TestValidBuild()
         {
+            string validBoard = @"[
+                                [[0,'white1'],[0,null],[0,null],[0,null],[0,null]], " +
+                               "[[0, null],[0,null],[2,null],[4,null],[0,null]]," +
+                               "[[0,null],[1,null],[0,'white2'],[0,'blue2'],[0,null]]," +
+                               "[[0,null],[0,null],[3,null],[0,null],[0,null]]," +
+                               "[[0,null],[0,null],[0,null],[0,'blue1'],[0,null]]" +
+                             "]";
+            Board newBoard = new Board(JArray.Parse(validBoard));
+            string[] n_directions = new string[] { "W", "N" };
+            string[] s_directions = new string[] { "W", "S" };
+            string[] e_directions = new string[] { "W", "E" };
+            string[] w_directions = new string[] { "W", "W" };
+            Assert.IsTrue(RuleChecker.IsValidBuild("white2", n_directions));
+            Assert.IsTrue(RuleChecker.IsValidBuild("white2", s_directions));
+            Assert.IsTrue(RuleChecker.IsValidBuild("white2", w_directions));
+            Assert.IsTrue(RuleChecker.IsValidBuild("blue2", e_directions));
+        }
+
+        [Test()]
+        public void TestInvalidBuild()
+        {
+            Console.WriteLine("---TestInvalidBuild---");
             string validBoard = @"[
                                 [[0,'white1'],[0,null],[0,null],[0,null],[0,null]], " +
                                "[[0, null],[0,null],[0,null],[4,null],[0,null]]," +
@@ -116,26 +157,17 @@ namespace santorini
             string[] s_directions = new string[] { "W", "S" };
             string[] e_directions = new string[] { "W", "E" };
             string[] w_directions = new string[] { "W", "W" };
-            Assert.IsTrue(RuleChecker.IsValidBuild("white2", n_directions));
-            Assert.IsTrue(RuleChecker.IsValidBuild("white2", s_directions));
-            Assert.IsTrue(RuleChecker.IsValidBuild("white2", w_directions));
-            Assert.IsTrue(RuleChecker.IsValidBuild("blue2", e_directions));
 
             // build on occupied
             Assert.IsFalse(RuleChecker.IsValidBuild("blue2", w_directions));
+            Assert.IsFalse(RuleChecker.IsValidBuild("white2", e_directions));
             // build on level 4 building
             Assert.IsFalse(RuleChecker.IsValidBuild("blue2", n_directions));
             // off the grid
-            Assert.Throws<IndexOutOfRangeException>(
-                delegate
-                {
-                    RuleChecker.IsValidBuild("blue1", s_directions);
-                });
-        }
+            Assert.IsFalse(RuleChecker.IsValidBuild("blue1", s_directions));
+            Assert.IsFalse(RuleChecker.IsValidBuild("white1", w_directions));
+            Assert.IsFalse(RuleChecker.IsValidBuild("white1", n_directions));
 
-        [Test()]
-        public void TestBuild()
-        {
             //var finalPosition = Board.GetDesiredPosition("white2", directions[1]);
             //Assert.AreEqual(Board.Board_[finalPosition[0], finalPosition[1]].Height, 1);
         }
