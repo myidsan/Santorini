@@ -47,6 +47,10 @@ namespace santorini
                 if (input == null) break;
                 // validate board
                 Board newBoard = new Board((JArray)input[0]);
+                Cell[,] origalBoard = newBoard.Board_;
+
+                Board tempBoardObj;
+                Cell[,] tempBoard;
 
                 if (!RuleChecker.IsBoardValid())
                 {
@@ -55,22 +59,35 @@ namespace santorini
                 }
 
                 // validate move
-                    string worker = (string)input[1];
+                string worker = (string)input[1];
                 JArray directions = (JArray)input[2];
                 string[] stringDirections = directions.ToObject<string[]>();
-                if (!RuleChecker.IsValidMove(worker, stringDirections))
+                if (!RuleChecker.IsValidMove(newBoard, worker, stringDirections))
                 {
                     Console.WriteLine("no");
                     continue;
                 }
-                Board.Board_ = Board.Move(worker, stringDirections[0]);
+
+                // make a tempBoard and 
+                // construct a new tempBoardObj for build
+                tempBoard = newBoard.Move(worker, stringDirections[0]);
+                tempBoardObj = new Board(tempBoard);
+
+                // check whether the player has won
+                // if so, terminate the game
+                if (RuleChecker.IsPlayerWinner(tempBoardObj, worker))
+                {
+                    Console.WriteLine("worker is on level 3: player wins");
+                    continue;
+                }
 
                 // validate build
-                if (!RuleChecker.IsValidBuild(worker, stringDirections))
+                if (!RuleChecker.IsValidBuild(tempBoardObj, worker, stringDirections))
                 {
                     Console.WriteLine("no");
                     continue;
                 }
+                tempBoard = tempBoardObj.Move(worker, stringDirections[0]);
 
                 // all good
                 Console.WriteLine("yes");

@@ -47,8 +47,6 @@
     <Compile Include="RuleChecker.cs" />
     <Compile Include="Cell.cs" />
     <Compile Include="tests\RuleCheckerTest.cs" />
-    <Compile Include="designPlayer.cs" />
-    <Compile Include="tests\ProgramTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

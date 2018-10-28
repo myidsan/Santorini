@@ -27,32 +27,34 @@ namespace santorini
             return true;
         }
 
-        public static bool IsValidMove(string worker, string[] direction)
+        public static bool IsValidMove(Board targetBoard, string worker, string[] direction)
         {
+            // moving direction is undefined
+            if (!Board.directions.ContainsKey(direction[0])) return false; // "NWE"
+
             // if NeighborCell does not exists
-            if (!Board.NeighboringCellExistsHelper(worker, direction[0])) return false;
+            if (!targetBoard.NeighboringCellExistsHelper(worker, direction[0])) return false;
 
             // if NeighborCell in given direction is not occupied
-            if (Board.OccupiedHelper(worker, direction[0])) return false;
+            if (targetBoard.OccupiedHelper(worker, direction[0])) return false;
 
             // if NeighborCell's height is is leq to CurrentCell's height
-            if (!IsValidVerticalMove(worker, direction[0])) return false;
-
-            // moving direction is undefined
-            if (!Board.directions.ContainsKey(direction[0])) return false;
+            if (!IsValidVerticalMove(targetBoard, worker, direction[0])) return false;
 
             return true;
         }
 
-        public static bool IsValidVerticalMove(string worker, string direction)
+        public static bool IsValidVerticalMove(Board targetBoard, string worker, string direction)
         {
             if (Board.PlayerPosition.ContainsKey(worker) && Board.directions.ContainsKey(direction))
             {
                 List<int> currPosition = Board.PlayerPosition[worker];
-                int CurrentCellHeight = Board.Board_[currPosition[0], currPosition[1]].Height;
+                int CurrentCellHeight = targetBoard.Board_[currPosition[0], currPosition[1]].Height;
 
-                List<int> finalPosition = Board.GetDesiredPosition(worker, direction);
-                int desiredCellHeight = Board.Board_[finalPosition[0], finalPosition[1]].Height;
+                List<int> finalPosition = targetBoard.GetDesiredPosition(worker, direction);
+                int desiredCellHeight = targetBoard.Board_[finalPosition[0], finalPosition[1]].Height;
+
+                if (desiredCellHeight == 4) return false;
 
                 if (desiredCellHeight - CurrentCellHeight > 1) return false;
             }
@@ -63,18 +65,27 @@ namespace santorini
             return true;
         }
 
-        public static bool IsValidBuild(string worker, string[] direction)
+        public static bool IsValidBuild(Board targetBoard, string worker, string[] direction)
         {
             // if NeighborCell does not exists
-            if (!Board.NeighboringCellExistsHelper(worker, direction[1])) return false;
+            if (!targetBoard.NeighboringCellExistsHelper(worker, direction[1])) return false;
 
             // if NeighborCell is not occupied to build
-            if (Board.OccupiedHelper(worker, direction[1])) return false;
+            if (targetBoard.OccupiedHelper(worker, direction[1])) return false;
 
             // if NeighborCell height is less than 4
-            if (Board.GetHeight(worker, direction[1]) >= 4) return false;
+            if (targetBoard.GetHeight(worker, direction[1]) >= 4) return false;
 
             return true;
+        }
+
+        public static bool IsPlayerWinner(Board targetBoard, string worker)
+        {
+            if (targetBoard.GetHeight(worker) == 3)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
