@@ -12,7 +12,7 @@ namespace santorini
         public int Height { get => height; set => height = value; }
         public string Worker { get => worker; set => worker = value; }
 
-        public Cell(JToken candidate, int rowIndex, int colIndex)
+        public Cell(Dictionary<string, List<int>> playerposition, JToken candidate, int rowIndex, int colIndex)
         {
             if (candidate.GetType() == typeof(JArray))
             {
@@ -20,7 +20,7 @@ namespace santorini
                 this.worker = (string)candidate[1];
                 if (this.worker != null)
                 {
-                    Board.PlayerPosition.Add(this.worker, new List<int> { rowIndex, colIndex });
+                    playerposition.Add(this.worker, new List<int> { rowIndex, colIndex });
                 }
             }
             else

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace santorini
@@ -47,14 +48,17 @@ namespace santorini
                 if (input == null) break;
                 // validate board
                 Board newBoard = new Board((JArray)input[0]);
-                Cell[,] origalBoard = newBoard.Board_;
+                Cell[,] orignalBoard = newBoard.Board_;
 
                 Board tempBoardObj;
                 Cell[,] tempBoard;
 
-                if (!RuleChecker.IsBoardValid())
+                string JSONresult;
+
+                if (!RuleChecker.IsBoardValid(newBoard))
                 {
-                    Console.WriteLine("no");
+                    JSONresult = JsonConvert.SerializeObject("no");
+                    Console.WriteLine(JSONresult);
                     continue;
                 }
 
@@ -64,14 +68,15 @@ namespace santorini
                 string[] stringDirections = directions.ToObject<string[]>();
                 if (!RuleChecker.IsValidMove(newBoard, worker, stringDirections))
                 {
-                    Console.WriteLine("no");
+                    JSONresult = JsonConvert.SerializeObject("no");
+                    Console.WriteLine(JSONresult);
                     continue;
                 }
 
                 // make a tempBoard and 
                 // construct a new tempBoardObj for build
                 tempBoard = newBoard.Move(worker, stringDirections[0]);
-                tempBoardObj = new Board(tempBoard);
+                tempBoardObj = new Board(tempBoard, newBoard.PlayerPosition);
 
                 // check whether the player has won
                 // if so, terminate the game
@@ -84,13 +89,15 @@ namespace santorini
                 // validate build
                 if (!RuleChecker.IsValidBuild(tempBoardObj, worker, stringDirections))
                 {
-                    Console.WriteLine("no");
+                    JSONresult = JsonConvert.SerializeObject("no");
+                    Console.WriteLine(JSONresult);
                     continue;
                 }
                 tempBoard = tempBoardObj.Move(worker, stringDirections[0]);
 
                 // all good
-                Console.WriteLine("yes");
+                JSONresult = JsonConvert.SerializeObject("yes");
+                Console.WriteLine(JSONresult);
             }
             return;
         }

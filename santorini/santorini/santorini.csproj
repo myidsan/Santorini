@@ -47,12 +47,18 @@
     <Compile Include="RuleChecker.cs" />
     <Compile Include="Cell.cs" />
     <Compile Include="tests\RuleCheckerTest.cs" />
+    <Compile Include="designs\designPlayer.cs" />
+    <Compile Include="tests\PlayerTest.cs" />
+    <Compile Include="Player.cs" />
+    <Compile Include="tests\StrategyTest.cs" />
+    <Compile Include="Strategy.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="tests\" />
+    <Folder Include="designs\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

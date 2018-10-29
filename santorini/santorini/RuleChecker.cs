@@ -6,11 +6,11 @@ namespace santorini
 {
     public class RuleChecker
     {
-        static public bool IsBoardValid()
+        static public bool IsBoardValid(Board newBoard)
         {
             string[] allowedPlayers = { "white1", "white2", "blue1", "blue2" };
 
-            if (Board.PlayerPosition.Count != 4)
+            if (newBoard.PlayerPosition.Count != 4)
             {
                 //Console.WriteLine("Board is invalid: number of player is {0}", Board.PlayerPosition.Count);
                 return false;
@@ -18,7 +18,7 @@ namespace santorini
 
             foreach (var player in allowedPlayers)
             {
-                if (!Board.PlayerPosition.ContainsKey(player))
+                if (!newBoard.PlayerPosition.ContainsKey(player))
                 {
                     //Console.WriteLine("Board is invalid: doesnt contain {0}", player);
                     return false;
@@ -30,7 +30,7 @@ namespace santorini
         public static bool IsValidMove(Board targetBoard, string worker, string[] direction)
         {
             // moving direction is undefined
-            if (!Board.directions.ContainsKey(direction[0])) return false; // "NWE"
+            if (!targetBoard.directions.ContainsKey(direction[0])) return false; // "NWE"
 
             // if NeighborCell does not exists
             if (!targetBoard.NeighboringCellExistsHelper(worker, direction[0])) return false;
@@ -46,9 +46,9 @@ namespace santorini
 
         public static bool IsValidVerticalMove(Board targetBoard, string worker, string direction)
         {
-            if (Board.PlayerPosition.ContainsKey(worker) && Board.directions.ContainsKey(direction))
+            if (targetBoard.PlayerPosition.ContainsKey(worker) && targetBoard.directions.ContainsKey(direction))
             {
-                List<int> currPosition = Board.PlayerPosition[worker];
+                List<int> currPosition = targetBoard.PlayerPosition[worker];
                 int CurrentCellHeight = targetBoard.Board_[currPosition[0], currPosition[1]].Height;
 
                 List<int> finalPosition = targetBoard.GetDesiredPosition(worker, direction);
@@ -86,6 +86,15 @@ namespace santorini
                 return true;
             }
             return false;
+        }
+
+        public static bool IsValidInitPlacement(Board targetBoard, List<int> coordinate)
+        {
+            if (targetBoard.Board_[coordinate[0], coordinate[1]].Worker != null)
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

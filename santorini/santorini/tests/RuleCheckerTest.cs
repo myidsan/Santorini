@@ -18,7 +18,7 @@ namespace santorini
                                "[[0,null],[0,null],[0,null],[0,'blue1'],[0,null]]" +
                              "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
-            Assert.IsTrue(RuleChecker.IsBoardValid());
+            Assert.IsTrue(RuleChecker.IsBoardValid(newBoard));
             newBoard.PrintBoard();
 
             string inValidPlayerNameBoard = @"[
@@ -30,7 +30,7 @@ namespace santorini
                              "]";
             //// board parse
             Board inValidBoard = new Board(JArray.Parse(inValidPlayerNameBoard));
-            Assert.IsFalse(RuleChecker.IsBoardValid());
+            Assert.IsFalse(RuleChecker.IsBoardValid(inValidBoard));
             inValidBoard.PrintBoard();
 
             string inValidPlayerCountBoard = @"[
@@ -41,7 +41,7 @@ namespace santorini
                                "[[0,null],[0,null],[0,null],[0,'blue1'],[0,null]]" +
                              "]";
             Board inValidBoard2 = new Board(JArray.Parse(inValidPlayerCountBoard));
-            Assert.IsFalse(RuleChecker.IsBoardValid());
+            Assert.IsFalse(RuleChecker.IsBoardValid(inValidBoard2));
             inValidBoard2.PrintBoard();
 
             string inValidHeightBoard = @"[
@@ -232,7 +232,7 @@ namespace santorini
             Board newBoard = new Board(JArray.Parse(validBoard));
             newBoard.Move("white1", "S");
             newBoard.PrintBoard();
-            newBoard.PrintPlayerPosition(Board.PlayerPosition);
+            newBoard.PrintPlayerPosition(newBoard.PlayerPosition);
 
         }
     }

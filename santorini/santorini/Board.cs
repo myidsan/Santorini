@@ -12,13 +12,13 @@ namespace santorini
         private Cell[,] board;
         public Cell[,] Board_ { get => board;}
 
-        static Dictionary<string, List<int>> playerPosition;
-        static public Dictionary<string, List<int>> PlayerPosition { get => playerPosition; set => playerPosition = value; }
+        Dictionary<string, List<int>> playerPosition;
+        public Dictionary<string, List<int>> PlayerPosition { get => playerPosition;}
 
         public Board(JArray boardArray)
         {
             board = new Cell[5, 5];
-            PlayerPosition = new Dictionary<string, List<int>>();
+            playerPosition = new Dictionary<string, List<int>>();
 
             int rowLength = board.GetLength(0);
             int colLength = board.GetLength(1);
@@ -27,18 +27,19 @@ namespace santorini
             {
                 for (int j = 0; j < colLength; j++)
                 {
-                    board[i, j] = new Cell(boardArray[i][j], i ,j);
+                    board[i, j] = new Cell(PlayerPosition, boardArray[i][j], i ,j);
                 }
             }
         }
 
         // to handle temporary board during parsing player move/build
-        public Board(Cell[,] tempBoard)
+        public Board(Cell[,] tempBoard, Dictionary<string, List<int>> prevPlayerPosition)
         {
             board = tempBoard;
+            playerPosition = prevPlayerPosition;
         }
 
-        static public Dictionary<string, List<int>> directions = new Dictionary<string, List<int>>(){
+        public Dictionary<string, List<int>> directions = new Dictionary<string, List<int>>(){
             {"N", new List<int> {-1, 0} },
             {"S", new List<int> {1, 0} },
             {"W", new List<int> {0, -1} },
@@ -197,8 +198,10 @@ namespace santorini
             Console.WriteLine((JValue)JSONresult);
         }
 
-        public void PlaceWorker(string Worker, int row, int col)
+        public void PlaceWorker(string Worker, List<int> coordinate)
         {
+            int row = coordinate[0];
+            int col = coordinate[1];
             var cellPos = Board_[row, col];
 
             if (cellPos.Worker != null)
