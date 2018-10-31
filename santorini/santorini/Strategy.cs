@@ -14,9 +14,16 @@ namespace santorini
         }
 
         // encapsulates WinInOneTurn() and PreventLoseInOneTurn() for the user
-        public static List<dynamic> GetOneMoveWinStrategy(Board board, string color)
+        public static ArrayList GetOneMoveWinStrategy(Board board, string playerColor, string oppColor)
         {
-            return new List<dynamic>();
+            ArrayList simpleWin = WinInOneTurn(board, playerColor);
+
+            if (simpleWin.Count != 0)
+            {
+                return simpleWin;
+            }
+            ArrayList preventSimpleWin = PreventLoseInOneTurn(board, playerColor, oppColor);
+            return preventSimpleWin;
         }
 
         //public static List<List<object>> WinInOneTurn(Board board, string color)
@@ -27,15 +34,7 @@ namespace santorini
             // if true, add the move direction to the directions[] -- one element case
             // append { worker, { move_dir } }
 
-            List<string> targets = new List<string>(); // { "White1", White2" }
-
-            foreach (var workerName in board.PlayerPosition.Keys)
-            {
-                if (workerName.Contains(color))
-                {
-                    targets.Add(workerName);
-                }
-            }
+            List<string> targets = Player.GetPlayerWorkers(board, color); // { "myColor1", "myColor2" }
 
             ArrayList OneTurnWinPlay = new ArrayList();
             foreach (var workerName in targets)
@@ -45,8 +44,10 @@ namespace santorini
                     if (board.NeighboringCellExists(workerName, moveDir))
                     {
                         List<int> AfterMoveCoordinate = board.GetDesiredPosition(workerName, moveDir);
-                        if (board.Board_[AfterMoveCoordinate[0], AfterMoveCoordinate[1]].Height == 3)
+                        if (board.Board_[AfterMoveCoordinate[0], AfterMoveCoordinate[1]].Height == 3 &&
+                            RuleChecker.IsValidMove(board, workerName, new string[]{moveDir}))
                         {
+
                             // winning scenario with only moveDir
                             OneTurnWinPlay.Add(new ArrayList { workerName, new ArrayList { moveDir } });
                         }
@@ -64,16 +65,8 @@ namespace santorini
             /// 5. in a for loop of all moveDirections, path - moveDir and lookup the List<int> key in Board.reverseDirection
             ///      if containsKey, get the value of the key as buildDir and add { workerName, { moveDir, buildDir } }
             ///      if not, continue
-            ArrayList validMoves = new ArrayList();
-            List<string> targets = new List<string>(); // { "myColor1", "myColor2" }
-
-            foreach (var workerName in board.PlayerPosition.Keys)
-            {
-                if (workerName.Contains(color))
-                {
-                    targets.Add(workerName);
-                }
-            }
+            ArrayList validMoves = new ArrayList(){};
+            List<string> targets = Player.GetPlayerWorkers(board, color); // { "myColor1", "myColor2" }
 
             ArrayList oppWorkerOneTurnWin = WinInOneTurn(board, oppColor);
             if (oppWorkerOneTurnWin.Count != 0)
@@ -100,9 +93,9 @@ namespace santorini
                         path.ForEach(Console.WriteLine);
                         if (path.Count != 0)
                         {
-                            foreach (var item in CanExecutePathInOnePlay(board, workerName, path))
+                            foreach (var play in CanExecutePathInOnePlay(board, workerName, path))
                             {
-                                validMoves.Add(new ArrayList { workerName, item });
+                                validMoves.Add(new ArrayList { workerName, play });
                             }
                         }
                         Console.WriteLine("----END for one player worker----");
@@ -129,6 +122,7 @@ namespace santorini
             if (Math.Sqrt(distance) > Math.Sqrt(MAX_DISTANCE_FOR_ONE_PLAY))
             {
                 Console.WriteLine("quitting cuz too far");
+
                 return new List<int> { };
             }
             return path;
@@ -150,7 +144,7 @@ namespace santorini
 
                 }
                 // need to take care of out of bound
-                if (!board.NeighboringCellExists(workerName, moveDir)) continue;
+                if (!RuleChecker.IsValidMove(board, workerName, new string[] { moveDir })) continue;
 
                 foreach (string buildDir in board.directions.Keys)
                 {
@@ -174,6 +168,29 @@ namespace santorini
             }
 
             return result;
+        }
+
+        // should return all possible moves for both playerWorkers
+        // check for NeighborCellExists and Ouccpied
+        public static ArrayList DefaultPlay(Board board, string playerColor)
+        {
+            ArrayList validMoves = new ArrayList() { };
+            List<string> targets = Player.GetPlayerWorkers(board, playerColor); // { "myColor1", "myColor2" }
+
+            foreach (var workerName in targets)
+            {
+                foreach (string moveDir in board.directions.Keys)
+                {
+                    if (!RuleChecker.IsValidMove(board, workerName, new string[] { moveDir })) continue;
+
+                    foreach (string buildDir in board.directions.Keys)
+                    {
+                        if (!RuleChecker.IsValidBuild(board, workerName, new string[] { moveDir, buildDir })) continue;
+                        validMoves.Add(new ArrayList { workerName, new ArrayList { moveDir, buildDir } });
+                    }
+                }
+            }
+            return validMoves;
         }
     }
 }

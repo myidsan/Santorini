@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace santorini
@@ -7,14 +8,14 @@ namespace santorini
     {
         //public static List<String> playerWorkers;
         //public static List<String> OppWorkers;
-        string color = "";
+        string playerColor = "";
         string oppColor = "";
-        public string Color { get => color;}
+        public string PlayerColor { get => playerColor; }
         public string OppColor { get => oppColor; }
 
         public Player()
         {
-            color = RegisterPlayer();
+            playerColor = RegisterPlayer();
             oppColor = GetOpponentColor();
         }
 
@@ -22,7 +23,7 @@ namespace santorini
         {
             foreach (var pColor in workerColors)
             {
-                if (pColor != color)
+                if (pColor != playerColor)
                 {
                     return pColor;
                 }
@@ -43,12 +44,10 @@ namespace santorini
             "Blue", "White"
         };
 
-
-
         public string RegisterPlayer()
         {
             Random rand = new Random();
-            int i = rand.Next(0, 1);
+            int i = rand.Next(0, 2);
             Console.WriteLine(i);
             return workerColors[i];
         }
@@ -69,6 +68,37 @@ namespace santorini
                 }
             }
             return coordinates;
+        }
+
+        public ArrayList GetNextBestPlay(Board board, string playerColor, string oppColor)
+        {
+            // player can win in one move
+            if (Strategy.WinInOneTurn(board, playerColor).Count != 0)
+                return Strategy.WinInOneTurn(board, playerColor);
+
+            // player can prevent the opp from winning in one move
+            if (Strategy.PreventLoseInOneTurn(board, playerColor, oppColor).Count != 0)
+                return Strategy.PreventLoseInOneTurn(board, playerColor, oppColor);
+
+            // player can't win and opp can't win in one move
+            if (Strategy.WinInOneTurn(board, playerColor).Count == 0 && Strategy.WinInOneTurn(board, oppColor).Count == 0)
+                return Strategy.DefaultPlay(board, playerColor);
+
+            // player cannot prevent the opp from winning in one move
+            return new ArrayList() { };
+        }
+
+        public static List<string> GetPlayerWorkers(Board board, string playerColor)
+        {
+            List<string> targets = new List<string>();
+            foreach (var workerName in board.PlayerPosition.Keys)
+            {
+                if (workerName.Contains(playerColor))
+                {
+                    targets.Add(workerName);
+                }
+            }
+            return targets;
         }
     }
 }

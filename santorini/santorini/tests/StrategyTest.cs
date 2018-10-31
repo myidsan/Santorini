@@ -16,7 +16,7 @@ namespace santorini.tests
         public void TestWhite1WinsInOneMove()
         {
             string validBoard = @"[
-                                [[0, 'White1'], 3, 0, 0, [0, 'Blue']]," +
+                                [[2, 'White1'], 3, 0, 0, [0, 'Blue']]," +
                                 "[3, 0, 0, 0, 0]," +
                                 "[0, 0, 0, 0, 0]," +
                                 "[1, 0, 0, 0, 0]," +
@@ -38,14 +38,15 @@ namespace santorini.tests
 
         [Test()]
         // 2. two workers can win in one move - all directions
+        // BlueForce: White, OppForce: Blue
         public void TestWhite1White2WinsInOneMove()
         {
             string validBoard = @"[
-                                [[0, 'White1'], 3, 0, 0, [0, 'Blue']]," +
+                                [[2, 'White1'], 3, 0, 0, [0, 'Blue']]," +
                                 "[1, 0, 0, 0, 0]," +
                                 "[0, 0, 0, 0, 0]," +
                                 "[3, 0, 0, 0, 0]," +
-                                "[[0, 'White2'], 2, 0, 0, [0, 'Blue2']]" +
+                                "[[2, 'White2'], 2, 0, 0, [0, 'Blue2']]" +
                                  "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
             Player newPlayer = new Player();
@@ -66,11 +67,11 @@ namespace santorini.tests
         public void TestBlue1PreventLoseInOne()
         {
             string validBoard = @"[
-                                [[0, 'White1'], 3, 0, [0, 'Blue1'], 0]," +
+                                [[2, 'White1'], 3, 0, [0, 'Blue1'], 0]," +
                                 "[1, 0, 0, 0, 0]," +
                                 "[0, 0, 0, 0, 0]," +
                                 "[3, 0, 0, 0, 0]," +
-                                "[[0, 'White2'], 2, 0, 0, [0, 'Blue2']]" +
+                                "[[2, 'White2'], 2, 0, 0, [0, 'Blue2']]" +
                                  "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
             Player newPlayer = new Player();
@@ -96,7 +97,7 @@ namespace santorini.tests
         public void TestBlue1Blue2PreventLoseInOne()
         {
             string validBoard = @"[
-                                [[0, 'White1'], 3, 0, [0, 'Blue1'], 0]," +
+                                [[2, 'White1'], 3, 0, [0, 'Blue1'], 0]," +
                                 "[1, 3, 0, 0, 0]," +
                                 "[0, 0, 0, 0, 0]," +
                                 "[[0, 'Blue2'], 0, 0, 0, 0]," +
@@ -124,6 +125,7 @@ namespace santorini.tests
         // helper functions test
         [Test()]
         // provide a path that a worker can go in one play(move and build)
+        // BlueForce: Blue, OppForce: White
         public void TestGetPossiblePathValid()
         {
             string validBoard = @"[
@@ -147,7 +149,8 @@ namespace santorini.tests
         }
 
         [Test()]
-        // 
+        // provide a path that a worker cannot go in one play(move and build)
+        // BlueForce: White, OppForce: Build
         public void TestGetPossiblePathInvalid()
         {
             string validBoard = @"[
@@ -169,6 +172,27 @@ namespace santorini.tests
             Assert.IsTrue(answer3.SequenceEqual(value4));
         }
 
-      
+        [Test()]
+        // Get legal and valid moves for the player when the opponent is going to win anyway
+        // BlueForce: White, OppForce: Build
+        public void TestDefaultPlay()
+        {
+            string validBoard = @"[
+                                [[2, 'White1'], 0, [2, 'Blue1'], 3, [2, 'Blue2']]," +
+                               "[0, 0, 0, 0, 3]," +
+                               "[0, 0, 0, 0, 0]," +
+                               "[0, 0, 0, 0, 0]," +
+                               "[[0, 'White2'], 0, 0, 3, 0]" +
+                                  "]";
+            Board newBoard = new Board(JArray.Parse(validBoard));
+
+            ArrayList answers = new ArrayList()
+            {
+
+            };
+            ArrayList values = Strategy.DefaultPlay(newBoard, "White");
+
+        }
+
     }
 }
