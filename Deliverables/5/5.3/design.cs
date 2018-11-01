@@ -34,7 +34,7 @@ public class Referee
     /// Contract: 
     /// Dependency: Player.PlacePlayerWorker()
     /// Knowledge: 
-    public void registerPlayers(Player p1, Player p2){ return !isGameOver; }
+    public void registerPlayers(Player p1, Player p2){ return;}
 
 
     /// <summary>
@@ -44,7 +44,7 @@ public class Referee
     /// Contract: 1. Valid player1 and Player 2 
     /// Dependency: 1. RuleChecker.isValidBoard() 
     ///             2. RuleChecker.IsValidInitPlacement()
-    public void placeWorkers(Player p1, Player p2){ return !isGameOver;}
+    public void placeWorkers(Player p1, Player p2){ return;}
 
 
     /// <summary>
@@ -57,7 +57,7 @@ public class Referee
     ///             2. RuleChecker.isValidMove()
     ///             3. RuleChecker.isValidBUild()
     /// Knowledge: Game Board
-    public void runPlay(ArrayList playerBestMoves){ return !isGameOver; }
+    public void runPlay(ArrayList playerBestMoves){ return;}
 
 
     /// <summary>
