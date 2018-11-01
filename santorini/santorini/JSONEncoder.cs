@@ -38,6 +38,12 @@ namespace santorini
             Console.WriteLine(JSONresult);
         }
 
+        public static string DumpJson(object target)
+        {
+            string JSONresult = JsonConvert.SerializeObject(target);
+            return JSONresult;
+        }
+
         public class JsonEncode
         {
             public int index;

@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace santorini
 {
+    [Serializable]
     public class Board
     {
         private Cell[,] board;
@@ -35,8 +38,8 @@ namespace santorini
         // to handle temporary board during parsing player move/build
         public Board(Cell[,] tempBoard, Dictionary<string, List<int>> prevPlayerPosition)
         {
-            board = tempBoard;
-            playerPosition = prevPlayerPosition;
+            board = (Cell[,])tempBoard.Clone();
+            playerPosition = new Dictionary<string, List<int>>(prevPlayerPosition);
         }
 
         public Dictionary<string, List<int>> directions = new Dictionary<string, List<int>>(){
@@ -49,17 +52,6 @@ namespace santorini
             {"SW", new List<int> {1, -1} },
             {"SE", new List<int> {1, 1} }
         };
-
-        //public Dictionary<List<int>, string> reverseDirections = new Dictionary<List<int>, string>(){
-        //    { new List<int> {-1, 0}, "N" },
-        //    { new List<int> {1, 0}, "S" },
-        //    { new List<int> {0, -1}, "W" },
-        //    { new List<int> {0, 1}, "E" },
-        //    { new List<int> {-1, -1}, "NW" },
-        //    { new List<int> {-1, 1}, "NE" },
-        //    { new List<int> {1, -1}, "SW" },
-        //    { new List<int> {1, 1}, "SE" }
-        //};
 
         /// queries
         public bool NeighboringCellExists(string worker, string direction)
@@ -204,6 +196,22 @@ namespace santorini
             }
             string JSONresult = JsonConvert.SerializeObject(result);
             Console.WriteLine((JValue)JSONresult);
+        }
+
+        public JArray DumpBoard()
+        {
+            List<List<dynamic>> result = new List<List<dynamic>>();
+            for (int i = 0; i < Board_.GetLength(0); i++)
+            {
+                List<dynamic> row = new List<dynamic>();
+                for (int j = 0; j < Board_.GetLength(1); j++)
+                {
+                    row.Add(Board_[i, j].PrintCell());
+                }
+                result.Add(row);
+            }
+            string JSONresult = JsonConvert.SerializeObject(result);
+            return JArray.Parse(JSONresult);
         }
 
         public void PlaceWorker(string Worker, List<int> coordinate)

@@ -175,37 +175,32 @@ namespace santorini
             {
                 foreach (string moveDir in board.directions.Keys)
                 {
-                    Board hell = board;
+                    // creats a clean copy of the board
+                    JArray test = new JArray();
+                    test = board.DumpBoard();
+                    Board hell = new Board(test);
+
+                    if (!RuleChecker.IsValidMove(hell, workerName, new string[] { moveDir }))
+                    {
+                        continue;
+                    }
                     Cell[,] temp = hell.Move(workerName, moveDir);
                     Board tempBoard = new Board(temp, hell.PlayerPosition);
 
-                    if (!RuleChecker.IsValidMove(board, workerName, new string[] { moveDir }))
-                    {
-                        Console.WriteLine("SHITTTTTT");
-                        continue; 
-                    }
+                    List<int> pos = hell.PlayerPosition[workerName];
 
-                    //board.PrintPlayerPosition(board.PlayerPosition);
-
-                    Console.WriteLine(workerName);
-                    Console.WriteLine(moveDir);
-
-                    foreach (string buildDir in board.directions.Keys)
+                    foreach (string buildDir in tempBoard.directions.Keys)
                     {
                         if (!RuleChecker.IsValidBuild(tempBoard, workerName, new string[] { moveDir, buildDir }))
                         {
-                            Console.WriteLine("FUCKKKKKKK");
-                            continue; 
+                            continue;
                         }
                         validMoves.Add(new ArrayList { workerName, new ArrayList { moveDir, buildDir } });
                     }
+
                 }
             }
-            //for (int i = 0; i < validMoves.Count; i++)
-            //{
-            //    Console.WriteLine(validMoves[i]);
-            //}
-            Console.WriteLine(validMoves.Count);
+            //Console.WriteLine(validMoves.Count);
             return validMoves;
         }
     }
