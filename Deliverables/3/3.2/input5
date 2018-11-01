@@ -1,0 +1,16 @@
+[
+ [[0,[0,null],[0,null],[0,null],[0,null]],
+  [[0,null],[0,null],[0,null],[0,null],[0,null]],
+  [[0,null],[0,"white1"],[0,"white2"],[0,"blue2"],[0,null]],
+  [[0,null],[0,null],[0,null],[0,null],[0,null]],
+  [[0,null],[0,null],[0,null],[0,"blue1"],[0,null]]],
+ ["move","blue1", "N"]
+]
+[
+ [[0,[0,null],[0,null],[0,null],[0,null]],
+  [[0,null],[0,null],[0,null],[0,null],[0,null]],
+  [[0,null],[0,"white1"],[0,"white2"],[0,"blue2"],[0,null]],
+  [[0,null],[0,null],[0,null],[0,"blue1"],[0,null]],
+  [[0,null],[0,null],[0,null],[0,null],[0,null]]],
+ ["occupied?","blue1", "N"]
+]

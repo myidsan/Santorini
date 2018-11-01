@@ -1,0 +1,6 @@
+{"key":2,"value":"abcdefgh\n"}
+[null, true, false, 1,2]
+["null", "true", 2]
+"hello world"
+{"index":1,"value":{"list":[1,2,3,4,5]}}
+
