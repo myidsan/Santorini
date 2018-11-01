@@ -52,6 +52,7 @@
     <Compile Include="Player.cs" />
     <Compile Include="tests\StrategyTest.cs" />
     <Compile Include="Strategy.cs" />
+    <Compile Include="Driver.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

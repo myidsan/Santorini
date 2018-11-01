@@ -80,6 +80,21 @@ namespace santorini
         }
 
         [Test()]
+        public void TestValidMoveEmergency()
+        {
+            Console.WriteLine("---TestValidMove---");
+            string validBoard = @"[
+                                [[0,'white1'],[0,null],[0,null],[0,null],[0,null]], " +
+                               "[[0, null],[0,null],[0,null],[0,null],[0,null]]," +
+                               "[[0,null],[0,null],[0,'white2'],[0,'blue2'],[0,null]]," +
+                               "[[0,null],[0,null],[0,null],[0,null],[0,null]]," +
+                               "[[0,null],[0,null],[0,null],[0,'blue1'],[0,null]]" +
+                             "]";
+            Board newBoard = new Board(JArray.Parse(validBoard));
+            Assert.IsFalse(RuleChecker.IsValidMove(newBoard, "white1", new string[] { "N", "N" }));
+        }
+
+        [Test()]
         public void TestValidMoveRegardingHeight()
         {
             Console.WriteLine("---TestValidMove---");

@@ -47,7 +47,6 @@ namespace santorini
                         if (board.Board_[AfterMoveCoordinate[0], AfterMoveCoordinate[1]].Height == 3 &&
                             RuleChecker.IsValidMove(board, workerName, new string[]{moveDir}))
                         {
-
                             // winning scenario with only moveDir
                             OneTurnWinPlay.Add(new ArrayList { workerName, new ArrayList { moveDir } });
                         }
@@ -74,23 +73,19 @@ namespace santorini
                 foreach (ArrayList oppPlay in oppWorkerOneTurnWin)
                 {
                     // debug
-                    string JSONresult = JsonConvert.SerializeObject(oppPlay);
-                    Console.WriteLine(JSONresult);
-                    // parsing
                     var worker = oppPlay[0].ToString();
                     var moveDir = ((ArrayList)oppPlay[1])[0].ToString();
-                    //Console.WriteLine(worker + "-----");
-                    //Console.WriteLine(moveDir + "-----");
+                   
                     List<int> targetCellPos = board.GetDesiredPosition(worker, moveDir);
-                    Console.WriteLine("targetCellPos: ");
-                    targetCellPos.ForEach(Console.WriteLine);
+                    //Console.WriteLine("targetCellPos: ");
+                    //targetCellPos.ForEach(Console.WriteLine);
 
 
                     foreach (var workerName in targets)
                     {
                         List<int> path = GetPossiblePath(board, workerName, targetCellPos);
-                        Console.WriteLine("path: ");
-                        path.ForEach(Console.WriteLine);
+                        //Console.WriteLine("path: ");
+                        //path.ForEach(Console.WriteLine);
                         if (path.Count != 0)
                         {
                             foreach (var play in CanExecutePathInOnePlay(board, workerName, path))
@@ -98,7 +93,7 @@ namespace santorini
                                 validMoves.Add(new ArrayList { workerName, play });
                             }
                         }
-                        Console.WriteLine("----END for one player worker----");
+                        //Console.WriteLine("----END for one player worker----");
                     }
                 }
             }
@@ -108,7 +103,7 @@ namespace santorini
         // return - list of possible paths: List<List<int>>
         public static List<int> GetPossiblePath(Board board, string worker, List<int> targetCellPos)
         {
-            Console.WriteLine("in GetPossiblePath");
+            //Console.WriteLine("in GetPossiblePath");
             List<int> path = new List<int>();
             double MAX_DISTANCE_FOR_ONE_PLAY = 8.0;
             double distance = 0;
@@ -121,7 +116,7 @@ namespace santorini
             }
             if (Math.Sqrt(distance) > Math.Sqrt(MAX_DISTANCE_FOR_ONE_PLAY))
             {
-                Console.WriteLine("quitting cuz too far");
+                //Console.WriteLine("quitting cuz too far");
 
                 return new List<int> { };
             }
@@ -133,7 +128,7 @@ namespace santorini
         // assumes that the coordinate will be not out of bounds
         public static ArrayList CanExecutePathInOnePlay(Board board, string workerName, List<int> path)
         {
-            Console.WriteLine("CanExecutePathInOnePlay:");
+            //Console.WriteLine("CanExecutePathInOnePlay:");
             ArrayList result = new ArrayList();
             foreach (var moveDir in board.directions.Keys)
             {
@@ -150,10 +145,10 @@ namespace santorini
                 {
                     if (key.SequenceEqual(board.directions[buildDir]))
                     {
-                        Console.WriteLine("in arraylist equals:");
-                        Console.WriteLine("key:");
-                        key.ForEach(Console.WriteLine);
-                        Console.WriteLine("buildDir:");
+                        //Console.WriteLine("in arraylist equals:");
+                        //Console.WriteLine("key:");
+                        //key.ForEach(Console.WriteLine);
+                        //Console.WriteLine("buildDir:");
                         result.Add(new ArrayList { moveDir, buildDir });
                     }
                 }
@@ -176,20 +171,41 @@ namespace santorini
         {
             ArrayList validMoves = new ArrayList() { };
             List<string> targets = Player.GetPlayerWorkers(board, playerColor); // { "myColor1", "myColor2" }
-
             foreach (var workerName in targets)
             {
                 foreach (string moveDir in board.directions.Keys)
                 {
-                    if (!RuleChecker.IsValidMove(board, workerName, new string[] { moveDir })) continue;
+                    Board hell = board;
+                    Cell[,] temp = hell.Move(workerName, moveDir);
+                    Board tempBoard = new Board(temp, hell.PlayerPosition);
+
+                    if (!RuleChecker.IsValidMove(board, workerName, new string[] { moveDir }))
+                    {
+                        Console.WriteLine("SHITTTTTT");
+                        continue; 
+                    }
+
+                    //board.PrintPlayerPosition(board.PlayerPosition);
+
+                    Console.WriteLine(workerName);
+                    Console.WriteLine(moveDir);
 
                     foreach (string buildDir in board.directions.Keys)
                     {
-                        if (!RuleChecker.IsValidBuild(board, workerName, new string[] { moveDir, buildDir })) continue;
+                        if (!RuleChecker.IsValidBuild(tempBoard, workerName, new string[] { moveDir, buildDir }))
+                        {
+                            Console.WriteLine("FUCKKKKKKK");
+                            continue; 
+                        }
                         validMoves.Add(new ArrayList { workerName, new ArrayList { moveDir, buildDir } });
                     }
                 }
             }
+            //for (int i = 0; i < validMoves.Count; i++)
+            //{
+            //    Console.WriteLine(validMoves[i]);
+            //}
+            Console.WriteLine(validMoves.Count);
             return validMoves;
         }
     }

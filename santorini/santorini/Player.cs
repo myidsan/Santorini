@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace santorini
 {
@@ -16,6 +19,13 @@ namespace santorini
         public Player()
         {
             playerColor = RegisterPlayer();
+            oppColor = GetOpponentColor();
+        }
+
+        // for player-test-harness
+        public Player(string color)
+        {
+            playerColor = color;
             oppColor = GetOpponentColor();
         }
 
@@ -48,8 +58,17 @@ namespace santorini
         {
             Random rand = new Random();
             int i = rand.Next(0, 2);
-            Console.WriteLine(i);
             return workerColors[i];
+        }
+
+        public List<List<int>> Place(string color, Board board)
+        {
+            return PlacePlayerWorkers(board, color);
+        }
+
+        public ArrayList Play(Board board)
+        {
+            return GetNextBestPlay(board, this.PlayerColor, this.OppColor);
         }
 
         public List<List<int>> PlacePlayerWorkers(Board board, string color) 
@@ -99,6 +118,46 @@ namespace santorini
                 }
             }
             return targets;
+        }
+
+        public void RunCommand(JArray action)
+        {
+            string methodName = action[0].ToString();
+
+            // need to parse the command into C# name style
+            string command = ParseMethodName(methodName);
+            MethodInfo mi = this.GetType().GetMethod(command);
+            ParameterInfo[] parameters = mi.GetParameters();
+
+            object[] args = new object[parameters.Length];
+            List<object> argsList = new List<object>() { };
+
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (action[i+1].GetType() == typeof(JValue))
+                {
+                    args[i] = action[i + 1].ToString();
+                }
+                else if (action[i+1].GetType() == typeof(JArray))
+                {
+                    JArray board = (JArray)action[i + 1];
+                    args[i] = new Board(board);
+                }
+            }
+            object result = mi.Invoke(this, args);
+            JSONEncoder.PrintJson(result);
+        }
+
+        public string ParseMethodName(string name)
+        {
+            string[] parsing = name.Split('?');
+            string[] parsingTwo = parsing[0].Split('-');
+            string command = "";
+            foreach (var item in parsingTwo)
+            {
+                command += item.Substring(0, 1).ToUpper() + item.Substring(1);
+            }
+            return command;
         }
     }
 }

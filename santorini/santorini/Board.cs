@@ -50,11 +50,21 @@ namespace santorini
             {"SE", new List<int> {1, 1} }
         };
 
+        //public Dictionary<List<int>, string> reverseDirections = new Dictionary<List<int>, string>(){
+        //    { new List<int> {-1, 0}, "N" },
+        //    { new List<int> {1, 0}, "S" },
+        //    { new List<int> {0, -1}, "W" },
+        //    { new List<int> {0, 1}, "E" },
+        //    { new List<int> {-1, -1}, "NW" },
+        //    { new List<int> {-1, 1}, "NE" },
+        //    { new List<int> {1, -1}, "SW" },
+        //    { new List<int> {1, 1}, "SE" }
+        //};
+
         /// queries
         public bool NeighboringCellExists(string worker, string direction)
         {
             bool result = NeighboringCellExistsHelper(worker, direction);
-            Console.WriteLine(result);
             return result;
         }
 
@@ -62,7 +72,7 @@ namespace santorini
         {
             if (PlayerPosition.ContainsKey(worker) && directions.ContainsKey(direction))
             {
-                List<int> desiredDirection = directions[direction];
+                //List<int> desiredDirection = directions[direction];
                 List<int> finalPosition = GetDesiredPosition(worker, direction);
 
                 for (int i = 0; i < finalPosition.Count; i++)
@@ -83,7 +93,6 @@ namespace santorini
         public bool Occupied(string worker, string direction)
         {
             bool result = OccupiedHelper(worker, direction);
-            Console.WriteLine(result);
             return result;
         }
 
@@ -113,7 +122,6 @@ namespace santorini
                 List<int> finalPosition = GetDesiredPosition(worker, direction);
 
                 var cellPos = board[finalPosition[0], finalPosition[1]];
-                //Console.WriteLine(cellPos.Height);
                 return cellPos.Height;
             }
             throw new IndexOutOfRangeException("Neighboring cell doesn't exists so it can't have height");

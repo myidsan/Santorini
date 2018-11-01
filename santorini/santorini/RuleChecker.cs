@@ -33,7 +33,7 @@ namespace santorini
             if (!targetBoard.directions.ContainsKey(direction[0])) return false; // "NWE"
 
             // if NeighborCell does not exists
-            if (!targetBoard.NeighboringCellExistsHelper(worker, direction[0])) return false;
+            if (!targetBoard.NeighboringCellExists(worker, direction[0])) return false;
 
             // if NeighborCell in given direction is not occupied
             if (targetBoard.OccupiedHelper(worker, direction[0])) return false;
