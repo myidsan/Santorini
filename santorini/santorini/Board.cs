@@ -8,18 +8,17 @@ using Newtonsoft.Json.Linq;
 namespace santorini
 {
     public class Board
-    { 
-        static Cell[,] board = new Cell[5,5];
-        static public Cell[,] Board_ { get => board; set => board = value; }
+    {
+        private Cell[,] board;
+        public Cell[,] Board_ { get => board;}
 
-        JSONEncoder encoder = new JSONEncoder();
-
-        static Dictionary<string, List<int>> playerPosition;
-        static public Dictionary<string, List<int>> PlayerPosition { get => playerPosition; set => playerPosition = value; }
+        Dictionary<string, List<int>> playerPosition;
+        public Dictionary<string, List<int>> PlayerPosition { get => playerPosition;}
 
         public Board(JArray boardArray)
         {
-            PlayerPosition = new Dictionary<string, List<int>>();
+            board = new Cell[5, 5];
+            playerPosition = new Dictionary<string, List<int>>();
 
             int rowLength = board.GetLength(0);
             int colLength = board.GetLength(1);
@@ -28,12 +27,19 @@ namespace santorini
             {
                 for (int j = 0; j < colLength; j++)
                 {
-                    Board_[i, j] = new Cell(boardArray[i][j], i ,j);
+                    board[i, j] = new Cell(PlayerPosition, boardArray[i][j], i ,j);
                 }
             }
         }
 
-        static public Dictionary<string, List<int>> directions = new Dictionary<string, List<int>>(){
+        // to handle temporary board during parsing player move/build
+        public Board(Cell[,] tempBoard, Dictionary<string, List<int>> prevPlayerPosition)
+        {
+            board = tempBoard;
+            playerPosition = prevPlayerPosition;
+        }
+
+        public Dictionary<string, List<int>> directions = new Dictionary<string, List<int>>(){
             {"N", new List<int> {-1, 0} },
             {"S", new List<int> {1, 0} },
             {"W", new List<int> {0, -1} },
@@ -44,24 +50,34 @@ namespace santorini
             {"SE", new List<int> {1, 1} }
         };
 
+        //public Dictionary<List<int>, string> reverseDirections = new Dictionary<List<int>, string>(){
+        //    { new List<int> {-1, 0}, "N" },
+        //    { new List<int> {1, 0}, "S" },
+        //    { new List<int> {0, -1}, "W" },
+        //    { new List<int> {0, 1}, "E" },
+        //    { new List<int> {-1, -1}, "NW" },
+        //    { new List<int> {-1, 1}, "NE" },
+        //    { new List<int> {1, -1}, "SW" },
+        //    { new List<int> {1, 1}, "SE" }
+        //};
+
         /// queries
-        public static bool NeighboringCellExists(string worker, string direction)
+        public bool NeighboringCellExists(string worker, string direction)
         {
             bool result = NeighboringCellExistsHelper(worker, direction);
-            Console.WriteLine(result);
             return result;
         }
 
-        public static bool NeighboringCellExistsHelper(string worker, string direction)
+        public bool NeighboringCellExistsHelper(string worker, string direction)
         {
             if (PlayerPosition.ContainsKey(worker) && directions.ContainsKey(direction))
             {
-                List<int> desiredDirection = directions[direction];
+                //List<int> desiredDirection = directions[direction];
                 List<int> finalPosition = GetDesiredPosition(worker, direction);
 
                 for (int i = 0; i < finalPosition.Count; i++)
                 {
-                    if (finalPosition[i] < 0 || finalPosition[i] > Board_.GetLength(0) - 1)
+                    if (finalPosition[i] < 0 || finalPosition[i] > board.GetLength(0) - 1)
                     {
                         return false;
                     }
@@ -74,21 +90,20 @@ namespace santorini
             return true;
         }
 
-        public static bool Occupied(string worker, string direction)
+        public bool Occupied(string worker, string direction)
         {
             bool result = OccupiedHelper(worker, direction);
-            Console.WriteLine(result);
             return result;
         }
 
-        public static bool OccupiedHelper(string worker, string direction)
+        public bool OccupiedHelper(string worker, string direction)
         {
-            if (Board.NeighboringCellExistsHelper(worker, direction))
+            if (NeighboringCellExistsHelper(worker, direction))
             {
-                List<int> workerPosition = Board.PlayerPosition[worker]; // {row, cell}
-                List<int> finalPosition = Board.GetDesiredPosition(worker, direction);
+                List<int> workerPosition = PlayerPosition[worker]; // {row, cell}
+                List<int> finalPosition = GetDesiredPosition(worker, direction);
 
-                var cellPos = Board.Board_[finalPosition[0], finalPosition[1]];
+                var cellPos = board[finalPosition[0], finalPosition[1]];
 
                 if (cellPos.Worker != null)
                 {
@@ -99,22 +114,35 @@ namespace santorini
             throw new IndexOutOfRangeException("Neighboring cell doesn't exists so it can't be occupied");
         }
 
-        public static int GetHeight(string worker, string direction)
+        public int GetHeight(string worker, string direction)
         {
             if (NeighboringCellExistsHelper(worker, direction))
             {
                 List<int> workerPosition = playerPosition[worker]; // {row, cell}
                 List<int> finalPosition = GetDesiredPosition(worker, direction);
 
-                var cellPos = Board_[finalPosition[0], finalPosition[1]];
-                //Console.WriteLine(cellPos.Height);
+                var cellPos = board[finalPosition[0], finalPosition[1]];
                 return cellPos.Height;
             }
             throw new IndexOutOfRangeException("Neighboring cell doesn't exists so it can't have height");
         }
 
+        public int GetHeight(string worker)
+        {
+            List<int> workerPosition = playerPosition[worker];
+            var cellPos = board[workerPosition[0], workerPosition[1]];
+            return cellPos.Height;
+        }
+
+        public Cell[,] ExecutePlay(string worker, string[] direction)
+        {
+            // executes the play in order and 
+
+            return board;
+        }
+
         /// commands
-        public static Cell[,] Move(string worker, string direction)
+        public Cell[,] Move(string worker, string direction)
         {
             if (NeighboringCellExistsHelper(worker, direction) && !OccupiedHelper(worker,direction))
             {
@@ -128,10 +156,10 @@ namespace santorini
                 board[finalPosition[0], finalPosition[1]].Worker = worker;
             }
             //PrintBoard();
-            return Board_;
+            return board;
         }
 
-        public static Cell[,] Build(string worker, string direction)
+        public Cell[,] Build(string worker, string direction)
         {
             if (NeighboringCellExistsHelper(worker, direction) && !OccupiedHelper(worker, direction))
             {
@@ -142,12 +170,12 @@ namespace santorini
                     cellPos.Height++;
                 }
             }
-            PrintBoard();
-            return Board_;
+            //PrintBoard();
+            return board;
         }
 
         /// helper command starts
-        public static List<int> GetDesiredPosition(string worker, string direction)
+        public List<int> GetDesiredPosition(string worker, string direction)
         {
             // get current coordinate of the player {row, cell}
             List<int> workerPosition = PlayerPosition[worker];
@@ -162,7 +190,7 @@ namespace santorini
             return finalPosition;
         }
 
-        public static void PrintBoard()
+        public void PrintBoard()
         {
             List<List<dynamic>> result = new List<List<dynamic>>();
             for (int i = 0; i < Board_.GetLength(0); i++)
@@ -170,7 +198,7 @@ namespace santorini
                 List<dynamic> row = new List<dynamic>();
                 for (int j = 0; j < Board_.GetLength(1); j++)
                 {
-                    row.Add(board[i, j].PrintCell());
+                    row.Add(Board_[i, j].PrintCell());
                 }
                 result.Add(row);
             }
@@ -178,9 +206,11 @@ namespace santorini
             Console.WriteLine((JValue)JSONresult);
         }
 
-        public void PlaceWorker(string Worker, int row, int col)
+        public void PlaceWorker(string Worker, List<int> coordinate)
         {
-            var cellPos = board[row, col];
+            int row = coordinate[0];
+            int col = coordinate[1];
+            var cellPos = Board_[row, col];
 
             if (cellPos.Worker != null)
             {

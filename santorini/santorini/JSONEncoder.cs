@@ -9,10 +9,10 @@ namespace santorini
     class JSONEncoder
     {
         JsonEncode printer = new JsonEncode();
-        public JToken JSONParser()
+        public JArray JSONParser()
         {
-            Queue<JToken> test = new Queue<JToken>();
-            JToken results = null;
+            Queue<JArray> test = new Queue<JArray>();
+            JArray results = null;
             string line;
             string result = "";
 
@@ -21,7 +21,7 @@ namespace santorini
                 result += line;
                 try
                 {
-                    results = JToken.Parse(result);
+                    results = JArray.Parse(result);
                     return results;
                 }
                 catch (Exception)
@@ -32,12 +32,18 @@ namespace santorini
             return results;
         }
 
+        public static void PrintJson(object target)
+        {
+            string JSONresult = JsonConvert.SerializeObject(target);
+            Console.WriteLine(JSONresult);
+        }
+
         public class JsonEncode
         {
             public int index;
-            public JToken value;
+            public JArray value;
 
-            public void PrintOut(Queue<JToken> results)
+            public void PrintOut(Queue<JArray> results)
             {
                 while (results.Count != 0)
                 {
