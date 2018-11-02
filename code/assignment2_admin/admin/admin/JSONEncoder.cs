@@ -21,10 +21,12 @@ namespace admin
             NetworkStream networkStream = new NetworkStream(socket);
             StreamReader stream = new StreamReader(networkStream);
 
-
             Console.WriteLine("Reading data...");
-            while ((line = stream.ReadToEnd()) != "")
+            while ((line = stream.ReadLine()) != "")
+            //while (!stream.EndOfStream)
             {
+                //line = stream.ReadLine();
+                Console.WriteLine(line);
                 Console.WriteLine("waiting for end");
                 result += line;
 
@@ -38,6 +40,7 @@ namespace admin
                     continue;
                 }
             }
+            stream.Close();
             return results;
         }
 
