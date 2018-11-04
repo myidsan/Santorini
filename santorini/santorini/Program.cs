@@ -9,7 +9,7 @@ namespace santorini
     public class Program
     {
         /// <summary>
-        ///  Test harness for the board
+        ///  Test harness for the board -- assign4
         /// </summary>
         /// <param name="args">The command-line arguments.</param>
         //public static void Main(string[] args)
@@ -32,7 +32,7 @@ namespace santorini
         //}
 
         /// <summary>
-        /// Test harness for the rule checker
+        /// Test harness for the rule checker -- assign4
         /// </summary>
         /// <param name="args">The command-line arguments.</param>
         public static void Main(string[] args)
@@ -98,86 +98,27 @@ namespace santorini
                     }
                 }
                 JSONEncoder.PrintJson("yes");
-
-
-                //    if (stringDirections.Length == 1)
-                //    {
-                //        if (RuleChecker.IsValidMove(newBoard, worker, stringDirections))
-                //        {
-                //            tempBoard = newBoard.Move(worker, stringDirections[0]);
-                //            if (RuleChecker.IsPlayerWinner(newBoard, worker))
-                //            {
-                //                JSONresult = JsonConvert.SerializeObject("yes");
-                //                Console.WriteLine(JSONresult);
-                //                continue;
-                //            }
-                //            else
-                //            {
-                //                JSONresult = JsonConvert.SerializeObject("no");
-                //                Console.WriteLine(JSONresult);
-                //                continue;
-                //            }
-                //        }
-                //        else
-                //        {
-                //            JSONresult = JsonConvert.SerializeObject("no");
-                //            Console.WriteLine(JSONresult);
-                //            continue;
-                //        }
-                //    }
-                //    else
-                //    {
-                //        // length == 2 and not valid move
-                //        if (!RuleChecker.IsValidMove(newBoard, worker, stringDirections))
-                //        {
-                //            JSONEncoder.PrintJson("no");
-                //            continue;
-                //        }
-
-                //        // valid move, check valid move with a new tempBoard
-                //        tempBoard = newBoard.Move(worker, stringDirections[0]);
-                //        // make a tempBoard and move
-                //        JArray test = new JArray();
-                //        test = newBoard.DumpBoard();
-                //        tempBoardObj = new Board(test);
-                //        tempBoard = tempBoardObj.Move(worker, stringDirections[0]);
-
-                //        if (!RuleChecker.IsValidBuild(tempBoardObj, worker, stringDirections))
-                //        {
-                //            JSONresult = JsonConvert.SerializeObject("no");
-                //            Console.WriteLine(JSONresult);
-                //            continue;
-                //        }
-
-                //        // all good
-                //        JSONresult = JsonConvert.SerializeObject("yes");
-                //        Console.WriteLine(JSONresult);
-                //    }
-
-                //}
-                //return;
-                //}
-
-                //////// assignment 5
-                //public static void Main(string[] args)
-                //{
-                //    JSONEncoder parser = new JSONEncoder();
-
-                //    JArray input = parser.JSONParser();
-                //    string color = input[1].ToString();
-                //    Player newPlayer = new Player(color);
-                //    newPlayer.RunCommand(input);
-
-                //    // dispatch
-                //    while (true)
-                //    {
-                //        input = parser.JSONParser();
-                //        if (input == null) break;
-                //        newPlayer.RunCommand(input);
-                //    }
-                //    return;
-                //}
             }
         }
+
+        //////// assignment 5
+        //public static void Main(string[] args)
+        //{
+        //    JSONEncoder parser = new JSONEncoder();
+
+        //    JArray input = parser.JSONParser();
+        //    string color = input[1].ToString();
+        //    Player newPlayer = new Player(color);
+        //    newPlayer.RunCommand(input);
+
+        //    // dispatch
+        //    while (true)
+        //    {
+        //        input = parser.JSONParser();
+        //        if (input == null) break;
+        //        newPlayer.RunCommand(input);
+        //    }
+        //    return;
+        //}
     }
 }
