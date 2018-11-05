@@ -9,7 +9,7 @@ namespace santorini
     public class Program
     {
         /// <summary>
-        ///  Test harness for the board -- assign4
+        ///  Test harness for the board -- assign3
         /// </summary>
         /// <param name="args">The command-line arguments.</param>
         //public static void Main(string[] args)
@@ -101,7 +101,9 @@ namespace santorini
             }
         }
 
-        //////// assignment 5
+        /// <Summary>
+        /// Test harness for the rule checker -- assign5
+        /// </Summary>
         //public static void Main(string[] args)
         //{
         //    JSONEncoder parser = new JSONEncoder();

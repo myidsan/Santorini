@@ -27,21 +27,38 @@ namespace santorini
             return true;
         }
 
-        public static bool IsValidMove(Board targetBoard, string worker, string[] direction)
+        public static bool IsValidMove(Board targetBoard, string worker, string[] directions)
         {
             // moving direction is undefined
-            if (!targetBoard.directions.ContainsKey(direction[0])) return false; // "NWE"
+            if (!targetBoard.directions.ContainsKey(directions[0])) return false; // "NWE"
+
+            // handle directions array length of one
+            if (directions.Length == 1 && !IsPlayerWinnerAfterMove(targetBoard, worker, directions[0])) return false;
+
+            if (directions.Length == 2 && IsPlayerWinnerAfterMove(targetBoard, worker, directions[0])) return false;
 
             // if NeighborCell does not exists
-            if (!targetBoard.NeighboringCellExists(worker, direction[0])) return false;
+            if (!targetBoard.NeighboringCellExists(worker, directions[0])) return false;
 
             // if NeighborCell in given direction is not occupied
-            if (targetBoard.OccupiedHelper(worker, direction[0])) return false;
+            if (targetBoard.OccupiedHelper(worker, directions[0])) return false;
 
             // if NeighborCell's height is is leq to CurrentCell's height
-            if (!IsValidVerticalMove(targetBoard, worker, direction[0])) return false;
+            if (!IsValidVerticalMove(targetBoard, worker, directions[0])) return false;
 
             return true;
+        }
+
+        // if the length is one, the player should win
+        // static is okay because we are not modifying the Board_ field in the targetBoard object
+        // return true when player wins in move
+        public static bool IsPlayerWinnerAfterMove(Board targetBoard, string worker, string direction)
+        {
+            JArray temp = targetBoard.DumpBoard();
+            Board tempBoardObj = new Board(temp);
+            tempBoardObj.Move(worker, direction);
+            JSONEncoder.DumpJson(tempBoardObj.Board_);
+            return IsPlayerWinner(tempBoardObj, worker);
         }
 
         public static bool IsValidVerticalMove(Board targetBoard, string worker, string direction)
