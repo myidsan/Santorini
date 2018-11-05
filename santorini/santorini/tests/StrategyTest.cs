@@ -194,5 +194,44 @@ namespace santorini.tests
 
         }
 
+        [Test()]
+        // N = 2
+        public void TestPreventLoseInNTurn2()
+        {
+            string validBoard = @"[
+                                [0, 0, 0, 0, [0, 'Blue2']]," +
+                               "[0, 0, 0, [1, 'Blue1'], 0]," +
+                               "[0, 0, 3, 2, 0]," +
+                               "[0, 2, 2, 1, 0]," +
+                               "[0, [2, 'White1'], [2, 'White2'], 0, 0]" +
+                                  "]";
+            Board newBoard = new Board(JArray.Parse(validBoard));
+            ArrayList answers = new ArrayList()
+            {
+                new ArrayList {"Blue1", new ArrayList { "S", "W" } },
+                new ArrayList {"Blue1", new ArrayList { "W", "S" } },
+            };
+            ArrayList value = Strategy.PreventLoseInNTurn(newBoard, "Blue", "White", 2);
+            CollectionAssert.AreEquivalent(answers, value);
+            Assert.AreEqual(answers.Count, value.Count);
+        }
+
+        [Test()]
+        // N = 1
+        public void TestPreventLoseInNTurn1()
+        {
+            string validBoard = @"[
+                                [0, 0, 0, 0, [0, 'Blue2']]," +
+                               "[0, 0, 0, [1, 'Blue1'], 0]," +
+                               "[0, 0, 3, 2, 0]," +
+                               "[0, 2, 2, 1, 0]," +
+                               "[0, [2, 'White1'], [2, 'White2'], 0, 0]" +
+                                  "]";
+            Board newBoard = new Board(JArray.Parse(validBoard));
+            ArrayList answers = Strategy.GetNextBestPlayStrategy(newBoard, "Blue", "White");
+            ArrayList value = Strategy.PreventLoseInNTurn(newBoard, "Blue", "White", 1);
+            CollectionAssert.AreEquivalent(answers, value);
+            Assert.AreEqual(answers.Count, value.Count);
+        }
     }
 }

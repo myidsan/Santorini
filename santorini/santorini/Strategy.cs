@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.IO;
 
 namespace santorini
 {
@@ -11,6 +12,103 @@ namespace santorini
     {
         public Strategy()
         {
+            StreamReader file = File.OpenText(@"./strategy.config");
+            JsonTextReader reader = new JsonTextReader(file);
+            JObject o2 = (JObject)JToken.ReadFrom(reader);
+            int numPlays = Convert.ToInt32(o2["look-ahead"]);
+        }
+
+        private static ArrayList masterList = new ArrayList() { };
+
+        public static ArrayList PreventLoseInNTurn(Board board, string playerColor, string oppColor, int numPlays)
+        {
+            //if (numPlays == 1)
+            //{
+            //    ArrayList hello = GetNextBestPlayStrategy(board, playerColor, oppColor);
+            //    if (hello.Count != 0)
+            //    {
+            //        masterList.AddRange(hello);
+            //    }
+            //}
+            //else
+            //{
+            //    if (WinInOneTurn(board, playerColor).Count != 0)
+            //    {
+            //        masterList.AddRange(WinInOneTurn(board, playerColor));
+            //    }
+
+            //    if (PreventLoseInOneTurn(board, playerColor, oppColor).Count != 0)
+            //    {
+            //        masterList.AddRange(PreventLoseInOneTurn(board, playerColor, oppColor));
+            //    }
+            //}
+
+            while (numPlays > 1)
+            {
+                // need to create boards from intermediateList
+                // feed each board to GetNextBestPlayStrategy
+                // if empty, that means that the player cannot prevent the opp from winning in one move
+                // --> return empty list
+                // if not empty, 
+                ArrayList innerList = DefaultPlay(board, oppColor);
+                foreach (ArrayList play in innerList)
+                {
+                    string worker = (string)play[0];
+                    string[] directions = ((IEnumerable)play[1]).Cast<object>()
+                                 .Select(x => x.ToString())
+                                 .ToArray();
+
+                    Board tempBoardObj = new Board(board.DumpBoard());
+                    tempBoardObj.Move(worker, directions[0]);
+                    tempBoardObj.Build(worker, directions[1]);
+                    ArrayList tempList = PreventLoseInNTurn(tempBoardObj, playerColor, oppColor, numPlays - 1);
+                    if (tempList.Count == 0) 
+                        return new ArrayList() { };
+                    else
+                        return tempList;
+                }
+
+                numPlays--;
+            }
+
+            if (WinInOneTurn(board, playerColor).Count != 0)
+            {
+                masterList.AddRange(WinInOneTurn(board, playerColor));
+            }
+
+            if (PreventLoseInOneTurn(board, playerColor, oppColor).Count != 0)
+            {
+                masterList.AddRange(PreventLoseInOneTurn(board, playerColor, oppColor));
+            }
+            if (masterList.Count == 0)
+            {
+                masterList.AddRange(DefaultPlay(board, playerColor));
+            }
+
+
+            return masterList;
+        }
+
+        /// <summary>
+        /// ADDED from the player -- should refactor if this stays here --  changed to static
+        /// </summary>
+        /// <returns>The next best play strategy.</returns>
+        public static ArrayList GetNextBestPlayStrategy(Board board, string playerColor, string oppColor)
+        {
+            // player can win in one move
+            if (Strategy.WinInOneTurn(board, playerColor).Count != 0)
+                return Strategy.WinInOneTurn(board, playerColor);
+
+            // player can prevent the opp from winning in one move
+            if (Strategy.PreventLoseInOneTurn(board, playerColor, oppColor).Count != 0)
+                return Strategy.PreventLoseInOneTurn(board, playerColor, oppColor);
+
+            // player can't win and opp can't win in one move
+            if (Strategy.WinInOneTurn(board, playerColor).Count == 0 && Strategy.WinInOneTurn(board, oppColor).Count == 0)
+                return Strategy.DefaultPlay(board, playerColor);
+
+            // player cannot prevent the opp from winning in one move
+            return new ArrayList() { };
         }
 
         // encapsulates WinInOneTurn() and PreventLoseInOneTurn() for the user
@@ -175,21 +273,20 @@ namespace santorini
                 foreach (string moveDir in board.directions.Keys)
                 {
                     // creats a clean copy of the board
-                    JArray test = new JArray();
-                    test = board.DumpBoard();
-                    Board hell = new Board(test);
 
-                    if (!RuleChecker.IsValidMove(hell, workerName, new string[] { moveDir }))
+                    foreach (string buildDir in board.directions.Keys)
                     {
-                        continue;
-                    }
-                    Cell[,] temp = hell.Move(workerName, moveDir);
-                    Board tempBoard = new Board(temp, hell.PlayerPosition);
+                        JArray test = new JArray();
+                        test = board.DumpBoard();
+                        Board hell = new Board(test);
+                        if (!RuleChecker.IsValidMove(hell, workerName, new string[] { moveDir, buildDir }))
+                        {
+                            continue;
+                        }
+                        Cell[,] temp = hell.Move(workerName, moveDir);
+                        Board tempBoard = new Board(temp, hell.PlayerPosition);
 
-                    List<int> pos = hell.PlayerPosition[workerName];
-
-                    foreach (string buildDir in tempBoard.directions.Keys)
-                    {
+                        List<int> pos = hell.PlayerPosition[workerName];
                         if (!RuleChecker.IsValidBuild(tempBoard, workerName, new string[] { moveDir, buildDir }))
                         {
                             continue;
