@@ -138,11 +138,10 @@ namespace santorini
                     key.Add(path[i] - board.directions[moveDir][i]);
 
                 }
-                // need to take care of out of bound
-                if (!RuleChecker.IsValidMove(board, workerName, new string[] { moveDir })) continue;
-
                 foreach (string buildDir in board.directions.Keys)
                 {
+                    // need to take care of out of bound
+                    if (!RuleChecker.IsValidMove(board, workerName, new string[] { moveDir, buildDir })) continue;
                     if (key.SequenceEqual(board.directions[buildDir]))
                     {
                         //Console.WriteLine("in arraylist equals:");
