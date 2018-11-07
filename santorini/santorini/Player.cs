@@ -51,7 +51,7 @@ namespace santorini
 
         List<string> workerColors = new List<string>
         {
-            "Blue", "White"
+            "blue", "white"
         };
 
         public string RegisterPlayer()
@@ -91,7 +91,8 @@ namespace santorini
 
         public ArrayList GetNextBestPlay(Board board, string playerColor, string oppColor)
         {
-            return Strategy.GetNextBestPlayStrategy(board, playerColor, oppColor);
+            //return Strategy.GetNextBestPlayStrategy(board, playerColor, oppColor);
+            return Strategy.PreventLoseInNTurn(board, playerColor, oppColor);
         }
 
         public static List<string> GetPlayerWorkers(Board board, string playerColor)

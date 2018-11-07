@@ -189,6 +189,7 @@ namespace santorini.tests
 
         [Test()]
         // Gets the one turn(move) win plays for the worker
+        // should return the winning move and all valid moves
         // BlueForce: Blue, OppForce: White
         public void TestGetNextBestPlay()
         {
@@ -207,7 +208,20 @@ namespace santorini.tests
                 new ArrayList { "Blue1", new ArrayList { "W" } },
                 new ArrayList { "Blue1", new ArrayList { "S" } },
                 new ArrayList { "Blue1", new ArrayList { "SW" } },
-                new ArrayList { "Blue2", new ArrayList { "W" } }
+                new ArrayList { "Blue2", new ArrayList { "W" } },
+                new ArrayList { "Blue2", new ArrayList { "N", "W" } },
+                new ArrayList { "Blue2", new ArrayList { "N", "S" } },
+                new ArrayList { "Blue2", new ArrayList { "N", "N" } },
+                new ArrayList { "Blue2", new ArrayList { "N", "SW" } },
+                new ArrayList { "Blue2", new ArrayList { "N", "NW" } },
+                new ArrayList { "Blue2", new ArrayList { "NW", "E" } },
+                new ArrayList { "Blue2", new ArrayList { "NW", "W" } },
+                new ArrayList { "Blue2", new ArrayList { "NW", "S" } },
+                new ArrayList { "Blue2", new ArrayList { "NW", "N" } },
+                new ArrayList { "Blue2", new ArrayList { "NW", "NE" } },
+                new ArrayList { "Blue2", new ArrayList { "NW", "NW" } },
+                new ArrayList { "Blue2", new ArrayList { "NW", "SE" } },
+                new ArrayList { "Blue2", new ArrayList { "NW", "SW" } }
             };
             ArrayList values = newPlayer.GetNextBestPlay(newBoard, "Blue", "White");
             CollectionAssert.AreEquivalent(answers, values);
@@ -236,33 +250,6 @@ namespace santorini.tests
                 new ArrayList { "Blue1", new ArrayList { "SE" } },
                 new ArrayList { "Blue2", new ArrayList { "NW" } },
                 new ArrayList { "Blue2", new ArrayList { "NE" } }
-            };
-            ArrayList values = newPlayer.GetNextBestPlay(newBoard, "Blue", "White");
-            CollectionAssert.AreEquivalent(answers, values);
-        }
-
-        [Test()]
-        // Gets the one turn play(move and build) for the player worker
-        // BlueForce: Blue, OppForce: White
-        // This is the goldmine case for this method
-        public void TestPreventLoseInOneMove()
-        {
-            string validBoard = @"[
-                                [0, 0, 0, 0, 0]," +
-                               "[0, [2, 'Blue2'], [1, 'Blue1'], 0, 0]," +
-                               "[0, 2, 1, [1, 'White2'], 0]," +
-                               "[0, [2, 'White1'], 3, 0, 0]," +
-                               "[0, 0, 0, 0, 0]" +
-                                  "]";
-            Board newBoard = new Board(JArray.Parse(validBoard));
-            Player newPlayer = new Player();
-
-            ArrayList answers = new ArrayList
-            {
-                new ArrayList { "Blue1", new ArrayList { "S", "S" } },
-                new ArrayList { "Blue1", new ArrayList { "SW", "SE" } },
-                new ArrayList { "Blue2", new ArrayList { "S", "SE" } },
-                new ArrayList { "Blue2", new ArrayList { "SE", "S" } },
             };
             ArrayList values = newPlayer.GetNextBestPlay(newBoard, "Blue", "White");
             CollectionAssert.AreEquivalent(answers, values);
