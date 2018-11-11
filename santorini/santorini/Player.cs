@@ -68,7 +68,8 @@ namespace santorini
 
         public ArrayList Play(Board board)
         {
-            return GetNextBestPlay(board, this.PlayerColor, this.OppColor);
+            return Strategy.PreventLoseInNTurn(board, playerColor, oppColor);
+            //return GetNextBestPlay(board, this.PlayerColor, this.OppColor);
         }
 
         public List<List<int>> PlacePlayerWorkers(Board board, string color) 
@@ -91,8 +92,7 @@ namespace santorini
 
         public ArrayList GetNextBestPlay(Board board, string playerColor, string oppColor)
         {
-            //return Strategy.GetNextBestPlayStrategy(board, playerColor, oppColor);
-            return Strategy.PreventLoseInNTurn(board, playerColor, oppColor);
+            return Strategy.GetNextBestPlayStrategy(board, playerColor, oppColor);
         }
 
         public static List<string> GetPlayerWorkers(Board board, string playerColor)

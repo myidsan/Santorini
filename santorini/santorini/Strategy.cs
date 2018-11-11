@@ -14,18 +14,74 @@ namespace santorini
         {
         }
 
-        static bool defaultCase = false;
         private static int numPlays = 2;
 
         // override method for testing purpose
-        public static ArrayList PreventLoseInNTurn(Board board, string playerColor, string oppColor, int numPlays)
+        public static ArrayList PreventLoseInNTurn(Board board, string playerColor, string oppColor, int numPlayz)
         {
+            //string currentDirectory = Directory.GetCurrentDirectory();
+            //string filePath = System.IO.Path.Combine(currentDirectory, "strategy.config");
+            //StreamReader file = File.OpenText(filePath);
+            //JsonTextReader reader = new JsonTextReader(file);
+            //JObject o2 = (JObject)JToken.ReadFrom(reader);
+            //numPlays = Convert.ToInt32(o2["look-ahead"]);
+
+            ArrayList resultList = new ArrayList() { };
+
+            // get init possible plays of the player
             ArrayList masterList = new ArrayList() { };
             masterList.AddRange(GetNextBestPlayStrategy(board, playerColor, oppColor));
-            Console.WriteLine(numPlays + ": " + masterList.Count);
-            //Console.WriteLine("master: " + JSONEncoder.DumpJson(masterList));
 
-            return PreventLoseInNTurnHelper(board, playerColor, oppColor, numPlays, masterList);
+            if (numPlayz == 1)
+            {
+                return masterList;
+            }
+
+            //// debug
+            //ArrayList temp = new ArrayList() { };
+            //temp.Add(new ArrayList { "Blue1", new ArrayList { "S", "N" } });
+            //masterList = temp;
+
+            // loop BFS on each play
+            foreach (ArrayList play in masterList)
+            {
+                string worker = (string)play[0];
+                string[] directions = ((IEnumerable)play[1]).Cast<object>()
+                                                             .Select(x => x.ToString())
+                                                             .ToArray();
+                if (directions.Length == 1)
+                {
+                    continue;
+                }
+
+                Board newBoard = new Board(board.DumpBoard());
+                newBoard.Move(worker, directions[0]);
+                newBoard.Build(worker, directions[1]);
+
+                List<Board> oppBoards = GetAllBoards(newBoard, oppColor);
+
+                bool completeAlive = true;
+
+                foreach (Board oBoard in oppBoards)
+                {
+                    if (!completeAlive) break;
+
+                    if (IsWinner(oBoard, oppColor))
+                    {
+                        completeAlive = false;
+                        break;
+                    }
+
+                    completeAlive = completeAlive && AliveMoveAfterNTurn(oBoard, playerColor, oppColor, numPlayz - 1);
+                }
+
+                if (completeAlive)
+                {
+                    resultList.Add(play);
+                }
+            }
+
+            return resultList;
         }
 
         public static ArrayList PreventLoseInNTurn(Board board, string playerColor, string oppColor)
@@ -37,127 +93,221 @@ namespace santorini
             //JObject o2 = (JObject)JToken.ReadFrom(reader);
             //numPlays = Convert.ToInt32(o2["look-ahead"]);
 
+            ArrayList resultList = new ArrayList() { };
+
+            // get init possible plays of the player
             ArrayList masterList = new ArrayList() { };
             masterList.AddRange(GetNextBestPlayStrategy(board, playerColor, oppColor));
 
-            return PreventLoseInNTurnHelper(board, playerColor, oppColor, numPlays, masterList);
-        }
-
-        public static ArrayList PreventLoseInNTurnHelper(Board board, string playerColor, string oppColor, int numPlays, ArrayList tempList)
-        {
-            //Console.WriteLine(numPlays + "-exec: " + tempList.Count);
-            if (numPlays != 0)
+            if (numPlays == 1)
             {
-                while (numPlays > 1)
+                return masterList;
+            }
+
+            // loop BFS on each play
+            foreach (ArrayList play in masterList)
+            {
+
+                string worker = (string)play[0];
+                string[] directions = ((IEnumerable)play[1]).Cast<object>()
+                                                             .Select(x => x.ToString())
+                                                             .ToArray();
+                if (directions.Length == 1)
                 {
-                    // need to create boards from intermediateList
-                    // feed each board to GetNextBestPlayStrategy
-                    // if empty, that means that the player cannot prevent the opp from winning in one move
-                    // --> return empty list
-                    // if not empty, 
-                    ArrayList innerList = new ArrayList() { };
-                    innerList.AddRange(tempList);
-                    //Console.WriteLine("innerList" + numPlays + ": " + innerList.Count);
+                    continue;
+                }
 
-                    foreach (ArrayList play in innerList)
+                Board newBoard = new Board(board.DumpBoard());
+                newBoard.Move(worker, directions[0]);
+                if (board.Equals(newBoard))
+                {
+                    Console.WriteLine("move is wrong");
+                    return resultList;
+                }
+                newBoard.Build(worker, directions[1]);
+                if (board.Equals(newBoard))
+                {
+                    Console.WriteLine("build is wrong");
+                    return resultList;
+                }
+
+                List<Board> oppBoards = GetAllBoards(newBoard, oppColor);
+
+                bool completeAlive = true;
+
+                foreach (Board oBoard in oppBoards)
+                {
+                    if (!completeAlive) break;
+
+                    if (IsWinner(oBoard, oppColor))
                     {
-                        string worker = (string)play[0];
-                        string[] directions = ((IEnumerable)play[1]).Cast<object>()
-                                     .Select(x => x.ToString())
-                                     .ToArray();
-                        //Console.WriteLine(worker + " " + JSONEncoder.DumpJson(directions));
-
-                        // player win in the current move, keep it
-                        if (directions.Length == 1)
-                        {
-                            continue;
-                        }
-
-                        Board tempBoardObj1 = new Board(board.DumpBoard());
-                        tempBoardObj1.Move(worker, directions[0]);
-
-                        Board tempBoardObj2 = new Board(tempBoardObj1.DumpBoard());
-                        tempBoardObj2.Build(worker, directions[1]);
-
-                        //check if current play can result into player dying in opp's next move
-                        //if so, remove current play from the list
-                        //this makes the runtime a lot faster - by ignoring possible "smart moves" of the player
-                        var hell = WinInOneTurn(tempBoardObj2, oppColor);
-                        if (hell.Count != 0)
-                        {
-                            tempList.Remove(play);
-                            continue;
-                        }
-
-                        // need to make the opp play valid moves
-                        ArrayList oppList = GetNextBestPlayStrategy(tempBoardObj2, oppColor, playerColor);
-                        //Console.WriteLine(numPlays + "-oppList: " + oppList.Count);
-
-                        ArrayList perm = new ArrayList();
-
-                        foreach (ArrayList oppPlay in oppList)
-                        {
-                            string oppWorker = (string)oppPlay[0];
-                            string[] oppDirections = ((IEnumerable)oppPlay[1]).Cast<object>()
-                                         .Select(x => x.ToString())
-                                         .ToArray();
-
-                            // opponent wins in the next move in current board
-                            if (oppDirections.Length == 1)
-                            {
-                                tempList.Remove(play);
-                                continue;
-                            }
-
-                            //Console.WriteLine(oppWorker + " " + JSONEncoder.DumpJson(oppDirections));
-
-                            Board tempBoardObj3 = new Board(tempBoardObj2.DumpBoard());
-                            tempBoardObj3.Move(oppWorker, oppDirections[0]);
-
-                            Board tempBoardObj4 = new Board(tempBoardObj3.DumpBoard());
-                            tempBoardObj4.Build(oppWorker, oppDirections[1]);
-
-                            // check if current play can result into player dying in opp's next move
-                            // if so, remove current play from the list
-                            // this makes the runtime a lot faster - by ignoring possible "smart moves" of the player
-
-                            //if (PreventLoseInOneTurn(tempBoardObj4, playerColor, oppColor).Count == 0 &&
-                            //WinInOneTurn(tempBoardObj4, oppColor).Count != 0)
-
-                            // opp can win because of its next move remove the play
-                            if (WinInOneTurn(tempBoardObj4, oppColor).Count != 0)
-                            {
-                                tempList.Remove(play);
-                                continue;
-                            }
-
-                            ArrayList temp = new ArrayList();
-                            //temp = PreventLoseInOneTurn(tempBoardObj4, playerColor, oppColor);
-                            //temp.AddRange(WinInOneTurn(tempBoardObj4, playerColor));
-                            //perm.AddRange(temp);
-                            //Console.WriteLine("------------------------temp: " + temp.Count);
-
-                            //if (temp.Count == 0)
-                            //{
-                            //    continue;
-                            //}
-
-                            //Console.WriteLine("---------tempList: " + tempList.Count);
-
-
-                            PreventLoseInNTurnHelper(tempBoardObj4, playerColor, oppColor, numPlays - 1, tempList);
-                        }
-                        //if (perm.Count != 0)
-                        //{
-                        //    //Console.WriteLine("Here3");
-                        //    tempList.Remove(play);
-                        //    continue;
-                        //}
+                        completeAlive = false;
+                        break;
                     }
-                    numPlays--;
+
+                    completeAlive = completeAlive && AliveMoveAfterNTurn(oBoard, playerColor, oppColor, numPlays - 1);
+                }
+
+                if (completeAlive)
+                {
+                    resultList.Add(play);
                 }
             }
-            return tempList;
+
+            return resultList;
+        }
+
+        public static bool AliveMoveAfterNTurn(Board board, string playerColor, string oppColor, int numPlay)
+        {
+            if (IsWinner(board, oppColor))
+            {
+                return false;
+            }
+
+            if (numPlay == 0) return true;
+
+            // get all dumb plays as a whole
+            //ArrayList nextPlays = GetNextBestPlayStrategy(board, playerColor, oppColor);
+            ArrayList nextPlays = GetAllPossibleplays(board, playerColor);
+
+            if (nextPlays.Count == 0) return false;
+
+            bool innerCompleteAlive = true;
+
+            foreach (ArrayList nPlay in nextPlays)
+            {
+                string worker = (string)nPlay[0];
+                string[] directions = ((IEnumerable)nPlay[1]).Cast<Object>()
+                                                             .Select(x => x.ToString())
+                                                             .ToArray();
+                // me winning is not important
+                if (directions.Length == 1) 
+                    continue;
+
+                Board newBoard = new Board(board.DumpBoard());
+                newBoard.Move(worker, directions[0]);
+                if (board.Equals(newBoard))
+                {
+                    Console.WriteLine("move is wrong");
+                    return false;
+                }
+                newBoard.Build(worker, directions[1]);
+                if (board.Equals(newBoard))
+                {
+                    Console.WriteLine("build is wrong");
+                    return false;
+                }
+
+                bool innerPartialAlive = true;
+
+                if (WinInOneTurn(newBoard, oppColor).Count != 0)
+                {
+                    innerPartialAlive = false;
+                    innerCompleteAlive = innerCompleteAlive && innerPartialAlive;
+                    if (!innerCompleteAlive) break;
+                }
+                else
+                {
+                    List<Board> nextBoards = GetAllBoards(newBoard, oppColor);
+                    if (nextBoards.Count == 0)
+                    {
+                        innerPartialAlive = false;
+                        break;
+                    }
+                    foreach (Board nBoard in nextBoards)
+                    {
+                        if (!innerPartialAlive) 
+                        {
+                            innerCompleteAlive = innerCompleteAlive && innerPartialAlive;
+                            if (!innerCompleteAlive) break;
+                        }
+                        if (IsWinner(nBoard, oppColor))
+                        {
+                            innerPartialAlive = false;
+                            innerCompleteAlive = innerCompleteAlive && innerPartialAlive;
+                            if (!innerCompleteAlive) break;
+                        }
+                        else
+                        {
+                            innerPartialAlive = innerPartialAlive && AliveMoveAfterNTurn(nBoard, playerColor, oppColor, numPlay - 1);
+                        }
+                    }
+                }
+                innerCompleteAlive = innerCompleteAlive && innerPartialAlive;
+                if (!innerCompleteAlive)
+                    break;
+            }
+            return innerCompleteAlive;
+        }
+
+        public static bool IsWinner(Board board, string playerColor)
+        {
+            List<string> targets = Player.GetPlayerWorkers(board, playerColor); // { "myColor1", "myColor2" }
+            foreach (var player in targets)
+            {
+                List<int> playerPos = board.PlayerPosition[player];
+                if (board.Board_[playerPos[0], playerPos[1]].Height == 3)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        // gets all possible boards from the player/opp in respective turn for its best plays 
+        public static List<Board> GetAllBoards(Board board, string playerColor)
+        {
+            List<Board> possibleBoards = new List<Board>() { };
+
+            ArrayList possiblePlays = GetAllPossibleplays(board, playerColor);
+            foreach (ArrayList play in possiblePlays)
+            {
+                // could be wrapped in a single play function
+                string worker = (string)play[0];
+                string[] directions = ((IEnumerable)play[1]).Cast<object>()
+                             .Select(x => x.ToString())
+                             .ToArray();
+
+                Board tempBoardObj1 = new Board(board.DumpBoard());
+
+                if (directions.Length == 1)
+                {
+                    tempBoardObj1.Move(worker, directions[0]);
+                    possibleBoards.Add(tempBoardObj1);
+                }
+                else
+                {
+                    tempBoardObj1.Move(worker, directions[0]);
+                    tempBoardObj1.Build(worker, directions[1]);
+                    possibleBoards.Add(tempBoardObj1);
+                }
+            }
+            return possibleBoards;
+        }
+
+        public static List<Board> GetAllAliveBoards(Board board, string playerColor, string oppColor)
+        {
+            ArrayList possiblePlays = GetNextBestPlayStrategy(board, playerColor, oppColor);
+            List<Board> possibleBoards = new List<Board>() { };
+
+            foreach (ArrayList play in possiblePlays)
+            {
+                // could be wrapped in a single play function
+                string worker = (string)play[0];
+                string[] directions = ((IEnumerable)play[1]).Cast<object>()
+                             .Select(x => x.ToString())
+                             .ToArray();
+
+                Board tempBoardObj1 = new Board(board.DumpBoard());
+                tempBoardObj1.Move(worker, directions[0]);
+                tempBoardObj1.Build(worker, directions[1]);
+
+                if (WinInOneTurn(tempBoardObj1, oppColor).Count == 0)
+                {
+                    possibleBoards.Add(tempBoardObj1);
+                }
+            }
+            return possibleBoards;
         }
 
         /// <summary>
@@ -166,30 +316,6 @@ namespace santorini
         /// <returns>The next best play strategy.</returns>
         public static ArrayList GetNextBestPlayStrategy(Board board, string playerColor, string oppColor)
         {
-            //ArrayList temp = new ArrayList();
-            //// player can't win and opp can't win in one move
-            //if (Strategy.WinInOneTurn(board, playerColor).Count == 0 && Strategy.WinInOneTurn(board, oppColor).Count == 0)
-            //{
-            //    return Strategy.DefaultPlay(board, playerColor, oppColor);
-            //}
-
-            //// player can win in one move
-            ////if (Strategy.WinInOneTurn(board, playerColor).Count != 0)
-            ////return Strategy.WinInOneTurn(board, playerColor);
-            //temp.AddRange(WinInOneTurn(board, playerColor));
-            //JSONEncoder.DumpJson("WinInOneTurn: " + temp);
-
-            //// player can prevent the opp from winning in one move
-            ////if (Strategy.PreventLoseInOneTurn(board, playerColor, oppColor).Count != 0)
-            ////return Strategy.PreventLoseInOneTurn(board, playerColor, oppColor);
-            //if (temp.Count == 0)
-            //{
-            //    temp.AddRange(PreventLoseInOneTurn(board, playerColor, oppColor));
-            //    JSONEncoder.DumpJson("PreventLoseInOneTurn: " + temp);
-            //}
-
-            //return temp;
-
             ArrayList temp = new ArrayList() { };
 
             // player can win in one move
@@ -277,7 +403,6 @@ namespace santorini
             ArrayList validMoves = new ArrayList(){};
             // true when opp cannot win in its next play
             // other, false
-            defaultCase = false;
 
             List<string> targets = Player.GetPlayerWorkers(board, color); // { "myColor1", "myColor2" }
 
@@ -314,7 +439,6 @@ namespace santorini
             else
             {
                 // true when opp cannot win in its next play
-                defaultCase = true;
             }
 
             return validMoves;
@@ -424,6 +548,39 @@ namespace santorini
                         }
 
 
+                    }
+                }
+            }
+            return validMoves;
+        }
+
+        public static ArrayList GetAllPossibleplays(Board board, string playerColor)
+        {
+            ArrayList validMoves = new ArrayList() { };
+            List<string> targets = Player.GetPlayerWorkers(board, playerColor); // { "myColor1", "myColor2" }
+            foreach (var workerName in targets)
+            {
+                foreach (string moveDir in board.directions.Keys)
+                {
+                    foreach (string buildDir in board.directions.Keys)
+                    {
+                        if (!RuleChecker.IsValidMove(board, workerName, new string[] { moveDir, buildDir })) continue;
+                        Board tempBoardObj1 = new Board(board.DumpBoard());
+                        tempBoardObj1.Move(workerName, moveDir);
+                        if (!RuleChecker.IsValidBuild(tempBoardObj1, workerName, new string[] { moveDir, buildDir })) continue;
+                        tempBoardObj1.Build(workerName, buildDir);
+
+                        List<int> finalPos = tempBoardObj1.PlayerPosition[workerName];
+                        if (!tempBoardObj1.Equals(board) && tempBoardObj1.Board_[finalPos[0], finalPos[1]].Height == 3)
+                        {
+                            validMoves.Add(new ArrayList { workerName, new ArrayList { moveDir } });
+                        }
+                        Board tempBoardObj2 = new Board(tempBoardObj1.DumpBoard());
+                        tempBoardObj2.Build(workerName, moveDir);
+                        if (!tempBoardObj2.Equals(tempBoardObj1))
+                        {
+                            validMoves.Add(new ArrayList { workerName, new ArrayList { moveDir, buildDir } });
+                        }
                     }
                 }
             }

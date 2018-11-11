@@ -281,12 +281,34 @@ namespace santorini.tests
             Board newBoard = new Board(JArray.Parse(validBoard));
             ArrayList answers = new ArrayList() 
             {
-                // not empty
+                new ArrayList {"Blue1", new ArrayList { "S", "S" } },
+                new ArrayList {"Blue1", new ArrayList { "SW", "SE" } }
             };
             ArrayList value = Strategy.PreventLoseInNTurn(newBoard, "Blue", "White", 2);
             Console.WriteLine(JSONEncoder.DumpJson(value));
             CollectionAssert.AreEquivalent(answers, value);
-            Assert.AreEqual(13, value.Count);
+            Assert.AreEqual(2, value.Count);
+        }
+
+        [Test()]
+        // BlueForce: Blue, OppForce: White
+        public void TestPreventLoseInTurn3_Board5()
+        {
+            string validBoard = @"[
+                                [4, 4, 4, 4, 4]," +
+                               "[4, 2, [1, 'Blue1'], 4, [1, 'Blue2']]," +
+                               "[1, 1, 1, 4, 4]," +
+                               "[1, 1, 2, 1, 1]," +
+                               "[0, 0, [1, 'White1'], 0, [0, 'White2']]" +
+                                  "]";
+            Board newBoard = new Board(JArray.Parse(validBoard));
+            ArrayList answers = new ArrayList()
+            {
+            };
+            ArrayList value = Strategy.PreventLoseInNTurn(newBoard, "Blue", "White", 3);
+            Console.WriteLine(JSONEncoder.DumpJson(value));
+            CollectionAssert.AreEquivalent(answers, value);
+            Assert.AreEqual(0, value.Count);
         }
 
         //    [Test()]
