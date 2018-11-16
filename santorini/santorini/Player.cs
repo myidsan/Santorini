@@ -51,7 +51,7 @@ namespace santorini
 
         List<string> workerColors = new List<string>
         {
-            "Blue", "White"
+            "blue", "white"
         };
 
         public string RegisterPlayer()
@@ -68,7 +68,8 @@ namespace santorini
 
         public ArrayList Play(Board board)
         {
-            return GetNextBestPlay(board, this.PlayerColor, this.OppColor);
+            return Strategy.PreventLoseInNTurn(board, playerColor, oppColor);
+            //return GetNextBestPlay(board, this.PlayerColor, this.OppColor);
         }
 
         public List<List<int>> PlacePlayerWorkers(Board board, string color) 
@@ -91,20 +92,7 @@ namespace santorini
 
         public ArrayList GetNextBestPlay(Board board, string playerColor, string oppColor)
         {
-            // player can win in one move
-            if (Strategy.WinInOneTurn(board, playerColor).Count != 0)
-                return Strategy.WinInOneTurn(board, playerColor);
-
-            // player can prevent the opp from winning in one move
-            if (Strategy.PreventLoseInOneTurn(board, playerColor, oppColor).Count != 0)
-                return Strategy.PreventLoseInOneTurn(board, playerColor, oppColor);
-
-            // player can't win and opp can't win in one move
-            if (Strategy.WinInOneTurn(board, playerColor).Count == 0 && Strategy.WinInOneTurn(board, oppColor).Count == 0)
-                return Strategy.DefaultPlay(board, playerColor);
-
-            // player cannot prevent the opp from winning in one move
-            return new ArrayList() { };
+            return Strategy.GetNextBestPlayStrategy(board, playerColor, oppColor);
         }
 
         public static List<string> GetPlayerWorkers(Board board, string playerColor)
