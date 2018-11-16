@@ -14,7 +14,7 @@ namespace santorini
         {
         }
 
-        private static int numPlays = 2;
+        private static int numPlays = 3;
 
         // override method for testing purpose
         public static ArrayList PreventLoseInNTurn(Board board, string playerColor, string oppColor, int numPlayz)
@@ -42,7 +42,7 @@ namespace santorini
             //temp.Add(new ArrayList { "Blue1", new ArrayList { "S", "N" } });
             //masterList = temp;
 
-            // loop BFS on each play
+            // DFS on each play
             foreach (ArrayList play in masterList)
             {
                 string worker = (string)play[0];
@@ -51,6 +51,7 @@ namespace santorini
                                                              .ToArray();
                 if (directions.Length == 1)
                 {
+                    resultList.Add(play);
                     continue;
                 }
 
@@ -104,32 +105,27 @@ namespace santorini
                 return masterList;
             }
 
-            // loop BFS on each play
+            //// debug
+            //ArrayList temp = new ArrayList() { };
+            //temp.Add(new ArrayList { "Blue1", new ArrayList { "S", "N" } });
+            //masterList = temp;
+
+            // DFS on each play
             foreach (ArrayList play in masterList)
             {
-
                 string worker = (string)play[0];
                 string[] directions = ((IEnumerable)play[1]).Cast<object>()
                                                              .Select(x => x.ToString())
                                                              .ToArray();
                 if (directions.Length == 1)
                 {
+                    resultList.Add(play);
                     continue;
                 }
 
                 Board newBoard = new Board(board.DumpBoard());
                 newBoard.Move(worker, directions[0]);
-                if (board.Equals(newBoard))
-                {
-                    Console.WriteLine("move is wrong");
-                    return resultList;
-                }
                 newBoard.Build(worker, directions[1]);
-                if (board.Equals(newBoard))
-                {
-                    Console.WriteLine("build is wrong");
-                    return resultList;
-                }
 
                 List<Board> oppBoards = GetAllBoards(newBoard, oppColor);
 
@@ -159,16 +155,19 @@ namespace santorini
 
         public static bool AliveMoveAfterNTurn(Board board, string playerColor, string oppColor, int numPlay)
         {
+            if (numPlay == 0) return true;
+
             if (IsWinner(board, oppColor))
             {
                 return false;
             }
 
-            if (numPlay == 0) return true;
-
+            // get smart plays n = 1
+            //ArrayList nextPlays = GetNextBestPlayStrategy(board, playerColor, oppColor); //this is after both plays once
             // get all dumb plays as a whole
-            //ArrayList nextPlays = GetNextBestPlayStrategy(board, playerColor, oppColor);
             ArrayList nextPlays = GetAllPossibleplays(board, playerColor);
+            //Console.WriteLine(JSONEncoder.DumpJson(board.DumpBoard()));
+            //Console.WriteLine(numPlay + ": " + playerColor + ": " + nextPlays.Count);
 
             if (nextPlays.Count == 0) return false;
 
@@ -181,8 +180,16 @@ namespace santorini
                                                              .Select(x => x.ToString())
                                                              .ToArray();
                 // me winning is not important
-                if (directions.Length == 1) 
+                // but me winning and opp not being able to win in that turn counts
+                if (directions.Length == 1 && WinInOneTurn(board, oppColor).Count == 0)
+                {
+                    return true;
+                }
+
+                if (directions.Length == 1)
+                {
                     continue;
+                }
 
                 Board newBoard = new Board(board.DumpBoard());
                 newBoard.Move(worker, directions[0]);
@@ -562,6 +569,10 @@ namespace santorini
             {
                 foreach (string moveDir in board.directions.Keys)
                 {
+                    if (RuleChecker.IsValidMove(board, workerName, new string[] { moveDir }))
+                    {
+                        validMoves.Add(new ArrayList { workerName, new ArrayList { moveDir } });
+                    }
                     foreach (string buildDir in board.directions.Keys)
                     {
                         if (!RuleChecker.IsValidMove(board, workerName, new string[] { moveDir, buildDir })) continue;
