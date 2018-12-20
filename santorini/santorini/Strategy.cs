@@ -14,18 +14,9 @@ namespace santorini
         {
         }
 
-        private static int numPlays = 3;
-
         // override method for testing purpose
         public static ArrayList PreventLoseInNTurn(Board board, string playerColor, string oppColor, int numPlayz)
         {
-            //string currentDirectory = Directory.GetCurrentDirectory();
-            //string filePath = System.IO.Path.Combine(currentDirectory, "strategy.config");
-            //StreamReader file = File.OpenText(filePath);
-            //JsonTextReader reader = new JsonTextReader(file);
-            //JObject o2 = (JObject)JToken.ReadFrom(reader);
-            //numPlays = Convert.ToInt32(o2["look-ahead"]);
-
             ArrayList resultList = new ArrayList() { };
 
             // get init possible plays of the player
@@ -87,12 +78,7 @@ namespace santorini
 
         public static ArrayList PreventLoseInNTurn(Board board, string playerColor, string oppColor)
         {
-            //string currentDirectory = Directory.GetCurrentDirectory();
-            //string filePath = System.IO.Path.Combine(currentDirectory, "strategy.config");
-            //StreamReader file = File.OpenText(filePath);
-            //JsonTextReader reader = new JsonTextReader(file);
-            //JObject o2 = (JObject)JToken.ReadFrom(reader);
-            //numPlays = Convert.ToInt32(o2["look-ahead"]);
+            int numPlays = Utility.ReadLookAhead();
 
             ArrayList resultList = new ArrayList() { };
 
@@ -104,12 +90,6 @@ namespace santorini
             {
                 return masterList;
             }
-
-            //// debug
-            //ArrayList temp = new ArrayList() { };
-            //temp.Add(new ArrayList { "Blue1", new ArrayList { "S", "N" } });
-            //masterList = temp;
-
             // DFS on each play
             foreach (ArrayList play in masterList)
             {
@@ -163,7 +143,7 @@ namespace santorini
             }
 
             // get smart plays n = 1
-            //ArrayList nextPlays = GetNextBestPlayStrategy(board, playerColor, oppColor); //this is after both plays once
+            // ArrayList nextPlays = GetNextBestPlayStrategy(board, playerColor, oppColor); //this is after both plays once
             // get all dumb plays as a whole
             ArrayList nextPlays = GetAllPossibleplays(board, playerColor);
             //Console.WriteLine(JSONEncoder.DumpJson(board.DumpBoard()));

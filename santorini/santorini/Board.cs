@@ -35,12 +35,26 @@ namespace santorini
             }
         }
 
-        // to handle temporary board during parsing player move/build
-        public Board(Cell[,] tempBoard, Dictionary<string, List<int>> prevPlayerPosition)
+        public static Board InitBoard()
         {
-            board = (Cell[,])tempBoard.Clone();
-            playerPosition = new Dictionary<string, List<int>>(prevPlayerPosition);
+            string initBoard = @"[
+                                [0,0,0,0,0]," +
+                               "[0,0,0,0,0]," +
+                               "[0,0,0,0,0]," +
+                               "[0,0,0,0,0]," +
+                               "[0,0,0,0,0]" +
+                                 "]";
+            Board newBoard = new Board(JArray.Parse(initBoard));
+            return newBoard;
         }
+
+        // deprecated 11/16/18
+        //// to handle temporary board during parsing player move/build
+        //public Board(Cell[,] tempBoard, Dictionary<string, List<int>> prevPlayerPosition)
+        //{
+        //    board = (Cell[,])tempBoard.Clone();
+        //    playerPosition = new Dictionary<string, List<int>>(prevPlayerPosition);
+        //}
 
         public Dictionary<string, List<int>> directions = new Dictionary<string, List<int>>(){
             {"N", new List<int> {-1, 0} },
@@ -214,7 +228,7 @@ namespace santorini
             return JArray.Parse(JSONresult);
         }
 
-        public void PlaceWorker(string Worker, List<int> coordinate)
+        public void PlaceWorker(string worker, List<int> coordinate)
         {
             int row = coordinate[0];
             int col = coordinate[1];
@@ -225,9 +239,9 @@ namespace santorini
                 Console.WriteLine("occupied by other worker");
                 return;
             }
-            cellPos.Worker = Worker;
+            cellPos.Worker = worker;
             // update dictionary
-            playerPosition[Worker] = new List<int> { row, col };
+            playerPosition[worker] = new List<int> { row, col };
 
             return;
         }
@@ -238,6 +252,38 @@ namespace santorini
                 Console.WriteLine(kv.Key);
                 kv.Value.ForEach(Console.WriteLine);
             }
+        }
+
+        public bool IsEqual(Board compare)
+        {
+            int rowLength = this.Board_.GetLength(0);
+            int colLength = this.Board_.GetLength(1);
+
+            for (int i = 0; i < rowLength; i++)
+            {
+                for (int j = 0; j < colLength; j++)
+                {
+                    if (!this.Board_[i, j].IsEqual(compare.Board_[i, j]))
+                        return false;
+                }
+            }
+            return true;
+        }
+
+        public bool IsEqual(Cell[,] compare)
+        {
+            int rowLength = this.Board_.GetLength(0);
+            int colLength = this.Board_.GetLength(1);
+
+            for (int i = 0; i < rowLength; i++)
+            {
+                for (int j = 0; j < colLength; j++)
+                {
+                    if (!this.Board_[i, j].IsEqual(compare[i, j]))
+                        return false;
+                }
+            }
+            return true;
         }
         /// helper command ends
 

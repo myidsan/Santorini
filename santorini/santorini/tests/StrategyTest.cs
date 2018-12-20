@@ -23,7 +23,7 @@ namespace santorini.tests
                                 "[[0, 'White2'], 0, 0, 0, [0, 'Blue2']]" +
                                  "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
-            Player newPlayer = new Player();
+            Player newPlayer = new Player("white");
 
             ArrayList answer = new ArrayList
             {
@@ -76,7 +76,7 @@ namespace santorini.tests
                                 "[[2, 'White2'], 2, 0, 0, [0, 'Blue2']]" +
                                  "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
-            Player newPlayer = new Player();
+            Player newPlayer = new Player("white");
 
 
             ArrayList answer = new ArrayList
@@ -101,7 +101,7 @@ namespace santorini.tests
                                 "[[2, 'White2'], 2, 0, 0, [0, 'Blue2']]" +
                                  "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
-            Player newPlayer = new Player();
+            Player newPlayer = new Player("blue");
 
             //JArray answer2 = new JArray
             //{
@@ -131,7 +131,7 @@ namespace santorini.tests
                                 "[[0, 'White2'], 2, 0, 0, 0]" +
                                  "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
-            Player newPlayer = new Player();
+            Player newPlayer = new Player("blue");
 
             ArrayList answer = new ArrayList
             {

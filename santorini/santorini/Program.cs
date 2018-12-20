@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -103,23 +104,88 @@ namespace santorini
         //}
 
         /// <Summary>
-        /// Test harness for the rule checker -- assign5
+        /// Test harness for the rule checker -- assign5, assign6
         /// </Summary>
-        public static void Main(string[] args)
+        //public static void Main(string[] args)
+        //{
+        //    JSONEncoder parser = new JSONEncoder();
+
+        //    JArray input = (JArray)parser.JSONParser();
+        //    string color = input[1].ToString();
+        //    Player newPlayer = new Player(color);
+        //    newPlayer.RunCommand(input);
+
+        //    // dispatch
+        //    while (true)
+        //    {
+        //        input = (JArray)parser.JSONParser();
+        //        if (input == null) break;
+        //        newPlayer.RunCommand(input);
+        //    }
+        //    return;
+        //}
+
+        /// <Summary>
+        /// Test harness for refree -- assign7
+        /// </Summary>
+        public static void Main(String[] args)
         {
+            // Your component should assume that every sequence of commands 
+            // consists of two Name messages, followed by two[Placement, Placement], 
+            // followed by a number of[Worker, Directions]. 
+            // The messages correspond to alternating interactions with the 
+            // two players of a Santorini game.Your component is not responsible 
+            // to reply to invalid messages including sequences of messages that 
+            // do not follow the above pattern.
+
             JSONEncoder parser = new JSONEncoder();
+            JToken input;
+            Referee gameRef = new Referee();
+            Board recordBoard = Board.InitBoard();
 
-            JArray input = parser.JSONParser();
-            string color = input[1].ToString();
-            Player newPlayer = new Player(color);
-            newPlayer.RunCommand(input);
+            // init players
+            input = parser.JSONParser();
+            gameRef.Name((string)input);
+            Player one = new Player((string)input);
+            input = parser.JSONParser();
+            gameRef.Name((string)input);
+            Player two = new Player((string)input);
 
-            // dispatch
+            gameRef = new Referee(one, two);
+
+            input = parser.JSONParser();
+            gameRef.PlaceWorkers((JArray)input);
+            input = parser.JSONParser();
+            gameRef.PlaceWorkers((JArray)input);
+
+            string workerName = "";
+            string[] directions = new string[]{}; 
+
+            // placement and execution
             while (true)
             {
                 input = parser.JSONParser();
                 if (input == null) break;
-                newPlayer.RunCommand(input);
+                //Console.WriteLine(input);
+                //if (input.GetType().Equals(typeof(JValue))) // name
+                //{
+                //    Console.WriteLine("name:" + input);
+                //}
+                //if (input.GetType().Equals(typeof(JArray))) // placement, execution
+                //{
+                //    JArray temp = (JArray)input;
+                //    workerName = (string)temp[0];
+                //    directions = temp[1].ToObject<string[]>();
+                //    Console.WriteLine("place/execute:" + input);
+                //}
+                //else
+                //{
+                //    Console.WriteLine("---------unexpected type for input");
+                //}
+                workerName = (string)input[0];
+                directions = input[1].ToObject<string[]>();
+                if (gameRef.ExecutePlay(workerName, directions) == null)
+                    break;
             }
             return;
         }
