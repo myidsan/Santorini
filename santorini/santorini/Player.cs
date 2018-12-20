@@ -9,24 +9,16 @@ namespace santorini
 {
     public class Player
     {
-        //public static List<String> playerWorkers;
-        //public static List<String> OppWorkers;
-        string playerColor = "";
+        public string playerColor = "";
         string oppColor = "";
-        public string PlayerColor { get => playerColor; }
+        string playerName = "";
         public string OppColor { get => oppColor; }
-
-        public Player()
-        {
-            playerColor = RegisterPlayer();
-            oppColor = GetOpponentColor();
-        }
+        public string PlayerName { get => playerName; }
 
         // for player-test-harness
-        public Player(string color)
+        public Player(string name="World")
         {
-            playerColor = color;
-            oppColor = GetOpponentColor();
+            playerName = name;
         }
 
         public string GetOpponentColor()
@@ -41,6 +33,17 @@ namespace santorini
             return "";
         }
 
+        //public List<string> GenerateWorkerName(Player targetPlayer)
+        //{
+        //    string workerColor = targetPlayer.PlayerColor;
+        //    List<string> workers = new List<string>();
+        //    for (int i = 0; i < 2; i++)
+        //    {
+        //        workers.Add(workerColor + i.ToString());
+        //    }
+        //    return workers;
+        //}
+
         List<List<int>> InitPlacementCandidates = new List<List<int>>
         {
             new List<int> {0, 0},
@@ -54,12 +57,12 @@ namespace santorini
             "blue", "white"
         };
 
-        public string RegisterPlayer()
-        {
-            Random rand = new Random();
-            int i = rand.Next(0, 2);
-            return workerColors[i];
-        }
+        //public string RegisterPlayer()
+        //{
+        //    Random rand = new Random();
+        //    int i = rand.Next(0, 2);
+        //    return workerColors[i];
+        //}
 
         public List<List<int>> Place(string color, Board board)
         {
@@ -72,7 +75,28 @@ namespace santorini
             //return GetNextBestPlay(board, this.PlayerColor, this.OppColor);
         }
 
-        public List<List<int>> PlacePlayerWorkers(Board board, string color) 
+        // For placing the works in corners
+        public List<List<int>> PlacePlayerWorkersCorners(Board board, string color) 
+        {
+            int count = 1;
+            List<List<int>> coordinates = new List<List<int>>();
+            foreach (var candidate in InitPlacementCandidates)
+            {
+                if (count == 3) break;
+                if (RuleChecker.IsValidInitPlacement(board, candidate))
+                {
+                    string worker = color + Convert.ToString(count);
+                    board.PlaceWorker(worker, candidate);
+                    count++;
+                    coordinates.Add(candidate);
+                }
+            }
+            return coordinates;
+        }
+
+        // For placing the works in general position
+        // need modification - 11/16/18
+        public List<List<int>> PlacePlayerWorkers(Board board, string color)
         {
             int count = 1;
             List<List<int>> coordinates = new List<List<int>>();

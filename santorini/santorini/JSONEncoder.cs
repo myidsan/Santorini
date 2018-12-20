@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 // additional packages
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -9,10 +10,10 @@ namespace santorini
     class JSONEncoder
     {
         JsonEncode printer = new JsonEncode();
-        public JArray JSONParser()
+        public JToken JSONParser()
         {
-            Queue<JArray> test = new Queue<JArray>();
-            JArray results = null;
+            Queue<JToken> test = new Queue<JToken>();
+            JToken results = null;
             string line;
             string result = "";
 
@@ -21,7 +22,7 @@ namespace santorini
                 result += line;
                 try
                 {
-                    results = JArray.Parse(result);
+                    results = JToken.Parse(result);
                     return results;
                 }
                 catch (Exception)
@@ -44,12 +45,19 @@ namespace santorini
             return JSONresult;
         }
 
+        //public static object ReadJson(string path)
+        //{
+        //    string text = System.IO.File.ReadAllText(path);
+        //    object result = JsonConvert.DeserializeObject(text); // bug
+        //    return result;
+        //}
+
         public class JsonEncode
         {
             public int index;
-            public JArray value;
+            public JToken value;
 
-            public void PrintOut(Queue<JArray> results)
+            public void PrintOut(Queue<JToken> results)
             {
                 while (results.Count != 0)
                 {

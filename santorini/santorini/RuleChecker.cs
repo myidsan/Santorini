@@ -27,6 +27,42 @@ namespace santorini
             return true;
         }
 
+        public static bool IsValidPlacement(Board targetBoard, string worker, List<int> coord)
+        {
+            // given coordinate out of bound
+            if (!CoordinateBoundChecker(targetBoard, coord)) return false;
+
+            // given coordinate is occupied
+            if (targetBoard.Board_[coord[0], coord[1]].Worker != null) return false;
+
+            return true;
+        }
+
+        private static bool CoordinateBoundChecker(Board targetBoard, List<int> coordinate)
+        {
+            int rowLength = targetBoard.Board_.GetLength(0);
+            int colLength = targetBoard.Board_.GetLength(1);
+
+            int rowPos = coordinate[0];
+            int colPos = coordinate[1];
+
+            if (rowPos < 0 || rowPos >= rowLength) return false;
+            if (colPos < 0 || colPos >= colLength) return false;
+
+            return true;
+        }
+
+        public static bool IsValidPlay(Board targetBoard, string worker, string[] directions)
+        {
+            if (!IsValidMove(targetBoard, worker, directions))
+                return false;
+            Board afterMoveBoard = new Board(targetBoard.DumpBoard());
+            afterMoveBoard.Move(worker, directions[0]);
+            if (!IsValidBuild(afterMoveBoard, worker, directions))
+                return false;
+            return true;
+        }
+
         public static bool IsValidMove(Board targetBoard, string worker, string[] directions)
         {
             // moving direction is undefined
@@ -57,7 +93,6 @@ namespace santorini
             JArray temp = targetBoard.DumpBoard();
             Board tempBoardObj = new Board(temp);
             tempBoardObj.Move(worker, direction);
-            JSONEncoder.DumpJson(tempBoardObj.Board_);
             return IsPlayerWinner(tempBoardObj, worker);
         }
 

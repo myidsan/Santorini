@@ -53,6 +53,10 @@
     <Compile Include="tests\StrategyTest.cs" />
     <Compile Include="Strategy.cs" />
     <Compile Include="Driver.cs" />
+    <Compile Include="Utility.cs" />
+    <Compile Include="Referee.cs" />
+    <Compile Include="tests\RefereeTest.cs" />
+    <Compile Include="designs\designRefereee.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

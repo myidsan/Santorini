@@ -41,5 +41,12 @@ namespace santorini
 
             return dArr.ToArray();
         }
+
+        public bool IsEqual(Cell compare)
+        {
+            if (this.Height != compare.height || this.Worker != compare.worker)
+                return false;
+            return true;
+        }
     }
 }

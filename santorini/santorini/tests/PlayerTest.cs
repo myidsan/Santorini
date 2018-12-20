@@ -21,7 +21,7 @@ namespace santorini.tests
                                "[0, 0, 0, 0, 0]" +
                                   "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
-            Player newPlayer = new Player();
+            Player newPlayer = new Player("white");
             List<List<int>> answer = new List<List<int>>
             {
                 new List<int>() { 0, 0 },
@@ -44,13 +44,13 @@ namespace santorini.tests
                                "[0, 0, 0, 0, 0]" +
                                   "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
-            Player newPlayer = new Player();
+            Player newPlayer = new Player("white");
             List<List<int>> answer = new List<List<int>>
             {
                 new List<int>() { 4, 4 },
                 new List<int>() { 4, 0 }
             };
-            CollectionAssert.AreEquivalent(newPlayer.PlacePlayerWorkers(newBoard, "White"), answer);
+            CollectionAssert.AreEquivalent(newPlayer.PlacePlayerWorkersCorners(newBoard, "White"), answer);
             Assert.AreEqual(newBoard.Board_[4, 4].Worker, "White1");
             Assert.AreEqual(newBoard.Board_[4, 0].Worker, "White2");
         }
@@ -68,13 +68,13 @@ namespace santorini.tests
                                "[0, 0, 0, 0, [0, 'Blue2']]" +
                                   "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
-            Player newPlayer = new Player();
+            Player newPlayer = new Player("white");
             List<List<int>> answer = new List<List<int>>
             {
                 new List<int>() { 0, 4 },
                 new List<int>() { 4, 0 }
             };
-            CollectionAssert.AreEquivalent(newPlayer.PlacePlayerWorkers(newBoard, "White"), answer);
+            CollectionAssert.AreEquivalent(newPlayer.PlacePlayerWorkersCorners(newBoard, "White"), answer);
             Assert.AreEqual(newBoard.Board_[0, 4].Worker, "White1");
             Assert.AreEqual(newBoard.Board_[4, 0].Worker, "White2");
         }
@@ -91,13 +91,13 @@ namespace santorini.tests
                                "[0, 0, 0, 0, [0, 'Blue2']]" +
                                   "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
-            Player newPlayer = new Player();
+            Player newPlayer = new Player("white");
             List<List<int>> answer = new List<List<int>>
             {
                 new List<int>() { 0, 0 },
                 new List<int>() { 4, 0 }
             };
-            CollectionAssert.AreEquivalent(newPlayer.PlacePlayerWorkers(newBoard, "White"), answer);
+            CollectionAssert.AreEquivalent(newPlayer.PlacePlayerWorkersCorners(newBoard, "White"), answer);
             Assert.AreEqual(newBoard.Board_[0, 0].Worker, "White1");
             Assert.AreEqual(newBoard.Board_[4, 0].Worker, "White2");
         }
@@ -114,13 +114,13 @@ namespace santorini.tests
                                "[[0, 'Blue1'], 0, 0, 0, [0, 'Blue2']]" +
                                   "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
-            Player newPlayer = new Player();
+            Player newPlayer = new Player("white");
             List<List<int>> answer = new List<List<int>>
             {
                 new List<int>() { 0, 0 },
                 new List<int>() { 0, 4 }
             };
-            CollectionAssert.AreEquivalent(newPlayer.PlacePlayerWorkers(newBoard, "White"), answer);
+            CollectionAssert.AreEquivalent(newPlayer.PlacePlayerWorkersCorners(newBoard, "White"), answer);
             Assert.AreEqual(newBoard.Board_[0, 0].Worker, "White1");
             Assert.AreEqual(newBoard.Board_[0, 4].Worker, "White2");
         }
@@ -137,13 +137,13 @@ namespace santorini.tests
                                "[[0, 'White2'], 0, 0, 0, 0]" +
                                   "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
-            Player newPlayer = new Player();
+            Player newPlayer = new Player("blue");
             List<List<int>> answer = new List<List<int>>
             {
                 new List<int>() { 4, 4 },
                 new List<int>() { 0, 4 }
             };
-            CollectionAssert.AreEquivalent(newPlayer.PlacePlayerWorkers(newBoard, "Blue"), answer); // asserts item not in order
+            CollectionAssert.AreEquivalent(newPlayer.PlacePlayerWorkersCorners(newBoard, "Blue"), answer); // asserts item not in order
             Assert.AreEqual(newBoard.Board_[0, 4].Worker, "Blue1");
             Assert.AreEqual(newBoard.Board_[4, 4].Worker, "Blue2");
         }
@@ -151,16 +151,11 @@ namespace santorini.tests
         [Test()]
         public void TestRegisterPlayer()
         {
-            Player newPlayer = new Player();
+            Player newPlayer = new Player("blue");
             List<string> answer = new List<string>
             {
-                newPlayer.PlayerColor, newPlayer.OppColor
+                newPlayer.playerColor, newPlayer.OppColor
             };
-            List<string> result = new List<string>
-            {
-                newPlayer.RegisterPlayer(), newPlayer.GetOpponentColor()
-            };
-            CollectionAssert.AreEquivalent(result, answer);
         }
 
         // seems like these are invalid inputs from the start
@@ -180,7 +175,7 @@ namespace santorini.tests
                                "[[0, 'White2'], 0, 0, 3, [2, 'Blue2']]" +
                                   "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
-            Player newPlayer = new Player();
+            Player newPlayer = new Player("white");
 
             ArrayList answer = new ArrayList(){};
             ArrayList value = newPlayer.GetNextBestPlay(newBoard, "White", "Blue");
@@ -201,7 +196,7 @@ namespace santorini.tests
                                "[[0, 'White2'], 0, 0, 3, [2, 'Blue2']]" +
                                   "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
-            Player newPlayer = new Player();
+            Player newPlayer = new Player("blue");
 
             ArrayList answers = new ArrayList
             {
@@ -240,7 +235,7 @@ namespace santorini.tests
                                "[[0, 'White2'], 0, 0, 3, 0]" +
                                   "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
-            Player newPlayer = new Player();
+            Player newPlayer = new Player("blue");
 
             ArrayList answers = new ArrayList
             {
@@ -267,7 +262,7 @@ namespace santorini.tests
                                   "[0, [2, 'Blue1'], 3, 0, 0]" +
                                      "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
-            Player newPlayer = new Player();
+            Player newPlayer = new Player("white");
 
 
             ArrayList answers = new ArrayList(){};
@@ -287,7 +282,7 @@ namespace santorini.tests
                                   "[0, [2, 'Blue1'], 0, 0, 0]" +
                                      "]";
             Board newBoard = new Board(JArray.Parse(validBoard));
-            Player newPlayer = new Player();
+            Player newPlayer = new Player("white");
 
 
             ArrayList answers = new ArrayList() { };
