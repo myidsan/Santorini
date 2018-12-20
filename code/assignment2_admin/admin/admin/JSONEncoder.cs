@@ -21,10 +21,12 @@ namespace admin
             NetworkStream networkStream = new NetworkStream(socket);
             StreamReader stream = new StreamReader(networkStream);
 
-
             Console.WriteLine("Reading data...");
-            while ((line = stream.ReadToEnd()) != "")
+            while ((line = stream.ReadLine()) != "")
+            //while (!stream.EndOfStream)
             {
+                //line = stream.ReadLine();
+                Console.WriteLine(line);
                 Console.WriteLine("waiting for end");
                 result += line;
 
@@ -38,7 +40,20 @@ namespace admin
                     continue;
                 }
             }
+            stream.Close();
             return results;
+        }
+
+        public static void PrintJson(object target)
+        {
+            string JSONresult = JsonConvert.SerializeObject(target);
+            Console.WriteLine(JSONresult);
+        }
+
+        public static string DumpJson(object target)
+        {
+            string JSONresult = JsonConvert.SerializeObject(target);
+            return JSONresult;
         }
 
         public class JsonEncode

@@ -97,6 +97,7 @@ namespace admin
                 System.Environment.Exit(1);
             }
             JToken JSONResponse = JSONEcoder.JSONParser(socket);
+            Console.WriteLine("back to admin");
             try
             {
                 if (JSONResponse.Type == JTokenType.Integer)
