@@ -35,7 +35,6 @@ namespace tcpClient
             Console.WriteLine("client socket closing");
             clientSocket.GetStream().Close();
             clientSocket.Close();
-
         }
     }
 }

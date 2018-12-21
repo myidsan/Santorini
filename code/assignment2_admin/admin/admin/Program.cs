@@ -17,7 +17,7 @@ namespace admin
             try
             {
                 // Set the TcpListener on port 13000.
-                Int32 port = 8000;
+                int port = 8000;
                 IPAddress localAddr = IPAddress.Parse("127.0.0.1");
 
                 // TcpListener server = new TcpListener(port);
@@ -76,7 +76,6 @@ namespace admin
                 // Stop listening for new clients.
                 server.Stop();
             }
-
 
             Console.WriteLine("\nHit enter to continue...");
             Console.Read();

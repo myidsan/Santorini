@@ -9,7 +9,7 @@ using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace santorini
+namespace santorini_remote
 {
     public class Program
     {
@@ -193,57 +193,52 @@ namespace santorini
         //    return;
         //}
 
+        //public static void Main(String[] args)
+
         /// <summary>
-        /// Game admin - currently working as parser for proxy player
+        /// RemotePlayerDriver
         /// </summary>
         public static void Main(String[] args)
         {
-            // read the text from input files
-            // send them over to remote via tcp
-            JSONEncoder parser = new JSONEncoder();
             int port = 8000;
-            IPAddress ipAddr = IPAddress.Parse("127.0.0.1");
-            TcpListener server = new TcpListener(ipAddr, port);
-            server.Start();
-            Console.WriteLine("Waiting for connection....");
+            string ipAddr = "127.0.0.1";
+            //IPAddress ipAddr = IPAddress.Parse("127.0.0.1");
+            //TcpListener messageReceiver = new TcpListener(ipAddr, port);
+            // start listening for client requests
+            // here, client is ProxyPlayer
+            //messageReceiver.Start();
 
-            TcpClient client = server.AcceptTcpClient();
-            Console.WriteLine("connected!");
-
-            NetworkStream stream = client.GetStream();
+            // Get a stream object for reading and writing
+            TcpClient messageSender = new TcpClient(ipAddr, port);
+            NetworkStream stream = messageSender.GetStream();
 
             // Buffer for reading data
-            byte[] readBytes = new byte[4096];
-            JArray input;
+            Byte[] bytes = new byte[4096];
+            string data = "";
 
-            while (true)
+            JSONEncoder parser = new JSONEncoder();
+            RemotePlayer newRemote = new RemotePlayer();
+
+            int i = 0;
+            while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
             {
-                // read from input file and send it via tcp connection
-                input = (JArray)parser.JSONParser();
-                Console.WriteLine("--------------");
-                Console.WriteLine(JSONEncoder.DumpJson(input));
-                if (input == null) break;
-                // convert input to byte[]
-                byte[] temp = Encoding.ASCII.GetBytes(JSONEncoder.DumpJson(input));
-                stream.Write(temp, 0, temp.Length);
+                // read bytes
+                Console.WriteLine("cleared");
+                data = Encoding.ASCII.GetString(bytes, 0, i);
+                Console.WriteLine("Received: {0}", data);
+                string result = newRemote.RunCommand(JArray.Parse(data));
+
+                // write result back
+                byte[] userInputAsyBytes = Encoding.ASCII.GetBytes(result);
+                stream.Write(userInputAsyBytes, 0, userInputAsyBytes.Length);
                 stream.Flush();
-
-                int i = 0;
-                while ((i = stream.Read(readBytes, 0, readBytes.Length)) != 0)
-                {
-                    string readData = Encoding.ASCII.GetString(readBytes, 0, i);
-                    Console.WriteLine("received: {0}", readData);
-                    stream.Flush();
-                    break;
-                }
-
-                //int i = 0;
-                //string readData = Encoding.ASCII.GetString(readBytes, 0, i);
-                //Console.WriteLine("received: {0}", readData);
-                //stream.Flush();
+                //BinaryWriter writer = new BinaryWriter(nwstream);
+                //writer.Write(userInput);
+                Console.WriteLine("sending : " + result);
+                bytes = new byte[4096];
             }
-            client.Close();
-            server.Stop();
+            // shutdown receiver
+            //messageReceiver.Stop();
         }
     }
 }
