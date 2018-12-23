@@ -232,6 +232,13 @@ namespace santorini
                 while ((i = stream.Read(readBytes, 0, readBytes.Length)) != 0)
                 {
                     string readData = Encoding.ASCII.GetString(readBytes, 0, i);
+                    if (readData == "Santorini is broken")
+                    {
+                        Console.WriteLine(readData);
+                        client.Close();
+                        server.Stop();
+                        return;
+                    }
                     Console.WriteLine("received: {0}", readData);
                     stream.Flush();
                     break;

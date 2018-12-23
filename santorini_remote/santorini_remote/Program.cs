@@ -222,11 +222,25 @@ namespace santorini_remote
             int i = 0;
             while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
             {
+                string result = "";
                 // read bytes
                 Console.WriteLine("cleared");
                 data = Encoding.ASCII.GetString(bytes, 0, i);
                 Console.WriteLine("Received: {0}", data);
-                string result = newRemote.RunCommand(JArray.Parse(data));
+                try
+                {
+                    result = newRemote.RunCommand(JArray.Parse(data));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Santorini is broken...");
+                    string killcode = "Santorini is broken";
+                    byte[] terminateSequence = Encoding.ASCII.GetBytes(killcode);
+                    stream.Write(terminateSequence, 0, terminateSequence.Length);
+                    stream.Flush();
+                    return;
+                }
+
 
                 // write result back
                 byte[] userInputAsyBytes = Encoding.ASCII.GetBytes(result);
