@@ -5,7 +5,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace santorini
+namespace santorini_remote
 {
     public class Player : PlayerInterface
     {
@@ -144,8 +144,9 @@ namespace santorini
             return targets;
         }
 
-        public void RunCommand(JArray action)
+        public string RunCommand(JArray action)
         {
+            Console.WriteLine("in runcommand");
             string methodName = action[0].ToString();
 
             // need to parse the command into C# name style
@@ -169,7 +170,7 @@ namespace santorini
                 }
             }
             object result = mi.Invoke(this, args);
-            JSONEncoder.PrintJson(result);
+            return JSONEncoder.DumpJson(result);
         }
 
         public string ParseMethodName(string name)

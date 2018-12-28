@@ -1,35 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.Sockets;
 // additional packages
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace admin
+namespace santorini_remote
 {
     class JSONEncoder
     {
-        public JToken JSONParser(Socket socket)
+        JsonEncode printer = new JsonEncode();
+        public JToken JSONParser()
         {
+            Queue<JToken> test = new Queue<JToken>();
             JToken results = null;
             string line;
             string result = "";
-            //int balance = 0;
 
-            NetworkStream networkStream = new NetworkStream(socket);
-            StreamReader stream = new StreamReader(networkStream);
-
-            Console.WriteLine("Reading data...");
-            while ((line = stream.ReadLine()) != "")
-            //while (!stream.EndOfStream)
+            while ((line = Console.ReadLine()) != null)
             {
-                //line = stream.ReadLine();
-                Console.WriteLine(line);
-                Console.WriteLine("waiting for end");
                 result += line;
-
                 try
                 {
                     results = JToken.Parse(result);
@@ -40,7 +30,6 @@ namespace admin
                     continue;
                 }
             }
-            stream.Close();
             return results;
         }
 
@@ -56,12 +45,19 @@ namespace admin
             return JSONresult;
         }
 
+        //public static object ReadJson(string path)
+        //{
+        //    string text = System.IO.File.ReadAllText(path);
+        //    object result = JsonConvert.DeserializeObject(text); // bug
+        //    return result;
+        //}
+
         public class JsonEncode
         {
             public int index;
             public JToken value;
 
-            static public void PrintOut(Queue<JToken> results)
+            public void PrintOut(Queue<JToken> results)
             {
                 while (results.Count != 0)
                 {
@@ -71,8 +67,8 @@ namespace admin
                         value = results.Dequeue()
                     };
                     string JSONresult = JsonConvert.SerializeObject(JsonObject);
+                    //object JSON = JsonConvert.DeserializeObject(JSONresult);
                     Console.WriteLine(JSONresult);
-
                 }
                 return;
             }

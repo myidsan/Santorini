@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectGuid>{8D974E1E-C1B8-414B-9BC6-27C74AABF648}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>santorini</RootNamespace>
-    <AssemblyName>santorini</AssemblyName>
+    <RootNamespace>santorini_remote</RootNamespace>
+    <AssemblyName>santorini_remote</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
